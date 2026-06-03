@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AIoT 개인 방 침입 감지 시스템 회로 설명서</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #5e6b81;
+      --line: #d7deea;
+      --blue: #2563eb;
+      --red: #dc2626;
+      --orange: #f97316;
+      --yellow: #eab308;
+      --purple: #7c3aed;
+      --green: #16a34a;
+      --black: #111827;
+      --soft-red: #fff1f2;
+      --soft-blue: #eff6ff;
+      --soft-yellow: #fefce8;
+      --soft-green: #f0fdf4;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    header {
+      padding: 40px 24px 24px;
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      color: white;
+    }
+
+    header .wrap,
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin: 20px 0 10px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    main {
+      padding: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .lead {
+      max-width: 840px;
+      color: #dbeafe;
+      font-size: 17px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      font-size: 13px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      text-align: left;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #1e3a8a;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95em;
+    }
+
+    pre {
+      margin: 12px 0 0;
+      padding: 14px;
+      overflow: auto;
+      border-radius: 12px;
+      background: #0f172a;
+      color: #e5e7eb;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    ol,
+    ul {
+      margin-top: 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .note {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--soft-yellow);
+      border: 1px solid #fde68a;
+      color: #713f12;
+    }
+
+    .danger {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--soft-red);
+      border: 1px solid #fecdd3;
+      color: #7f1d1d;
+    }
+
+    .ok {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--soft-green);
+      border: 1px solid #bbf7d0;
+      color: #14532d;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      display: inline-block;
+      flex: 0 0 auto;
+    }
+
+    .diagram {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfdff;
+    }
+
+    .ai-circuit-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .caption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pin-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .pin-card {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fafc;
+      font-size: 13px;
+    }
+
+    .pin-card strong {
+      display: block;
+      color: #0f172a;
+      font-size: 15px;
+    }
+
+    .print {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+      .grid,
+      .legend,
+      .pin-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      header {
+        color: var(--ink);
+        background: white;
+        border-bottom: 2px solid var(--line);
+      }
+
+      header .lead {
+        color: var(--muted);
+      }
+
+      .card {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+
+      .print {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>AI 기반 개인 방 침입 감지 시스템 회로 설명서</h1>
+      <p class="lead">
+        이 문서는 <code>aiot_room_security</code> 프로그램을 실제 Raspberry Pi에서 실행하기 위한
+        PIR 센서, 빨간 LED, 330Ω 저항, 능동부저, USB 웹캠 연결 방법을 정리한 회로 구성 안내서이다.
+      </p>
+      <div class="badges">
+        <span class="badge">PIR Signal: GPIO 16</span>
+        <span class="badge">Red LED: GPIO 21</span>
+        <span class="badge">3핀 Buzzer S: GPIO 18</span>
+        <span class="badge">GPIO 번호 방식: BCM</span>
+        <span class="badge">브레드보드 필수</span>
+      </div>
+      <button class="print" type="button" onclick="window.print()">인쇄 / PDF 저장</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card wide">
+      <h2>1. 초보자용 이미지 회로도</h2>
+      <p>
+        먼저 아래 그림처럼 큰 흐름을 보고 연결하면 된다. 색깔별 선의 의미는
+        빨강은 전원, 검정은 GND, 노랑은 PIR 신호, 주황은 LED 제어, 보라색은 3핀 부저의 S 신호선이다.
+      </p>
+      <img
+        class="ai-circuit-image"
+        src="assets/room_security_circuit_ai.png"
+        alt="Raspberry Pi 5, 브레드보드, PIR 센서, LED, 330옴 저항, S 플러스 마이너스 3핀 능동부저 모듈, 웹캠 연결을 보여주는 초보자용 회로 이미지">
+      <p class="caption">
+        이미지 모델로 생성한 이해용 회로도이다. 실제 배선할 때는 아래의 핀 매핑 표와 배선 순서를 최종 기준으로 사용한다.
+      </p>
+    </section>
+
+    <section class="card wide">
+      <h2>2. 상세 GPIO 핀 확인도</h2>
+      <p>
+        그림의 물리 핀 번호는 Raspberry Pi 40핀 헤더 기준이다.
+        Python 코드는 <code>gpiozero</code>의 BCM GPIO 번호를 사용하므로
+        <code>GPIO 16</code>, <code>GPIO 21</code>, <code>GPIO 18</code>을 코드에 그대로 둔다.
+      </p>
+
+      <svg class="diagram" viewBox="0 0 1200 760" role="img" aria-label="Raspberry Pi, breadboard, PIR 센서, LED, 부저 연결 회로도">
+        <defs>
+          <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12"/>
+          </filter>
+          <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#dc2626"/>
+          </marker>
+          <marker id="arrow-black" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#111827"/>
+          </marker>
+          <marker id="arrow-yellow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#eab308"/>
+          </marker>
+          <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#f97316"/>
+          </marker>
+          <marker id="arrow-purple" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#7c3aed"/>
+          </marker>
+        </defs>
+
+        <rect x="20" y="20" width="1160" height="720" rx="22" fill="#f8fafc"/>
+
+        <!-- Raspberry Pi board -->
+        <g filter="url(#shadow)">
+          <rect x="60" y="70" width="310" height="600" rx="28" fill="#15803d"/>
+          <rect x="92" y="110" width="108" height="72" rx="10" fill="#0f172a"/>
+          <rect x="218" y="112" width="112" height="38" rx="8" fill="#334155"/>
+          <rect x="218" y="164" width="112" height="38" rx="8" fill="#334155"/>
+          <circle cx="95" cy="96" r="8" fill="#bbf7d0"/>
+          <circle cx="335" cy="96" r="8" fill="#bbf7d0"/>
+          <circle cx="95" cy="644" r="8" fill="#bbf7d0"/>
+          <circle cx="335" cy="644" r="8" fill="#bbf7d0"/>
+          <text x="215" y="628" text-anchor="middle" font-size="24" fill="white" font-weight="700">Raspberry Pi</text>
+          <text x="215" y="654" text-anchor="middle" font-size="14" fill="#dcfce7">40핀 헤더 / BCM GPIO 사용</text>
+        </g>
+
+        <!-- 40 pin header -->
+        <g transform="translate(282,228)">
+          <rect x="-18" y="-18" width="88" height="430" rx="12" fill="#111827"/>
+          <text x="25" y="-34" text-anchor="middle" font-size="14" fill="#ffffff" font-weight="700">GPIO Header</text>
+          <!-- Draw pins 1~40 two columns -->
+          <g font-size="9" fill="#111827" text-anchor="middle">
+            <!-- left column odd physical pins -->
+            <circle cx="0" cy="0" r="10" fill="#f87171"/><text x="-24" y="4" fill="#fff">1</text>
+            <circle cx="0" cy="30" r="10" fill="#e5e7eb"/><text x="-24" y="34" fill="#fff">3</text>
+            <circle cx="0" cy="60" r="10" fill="#e5e7eb"/><text x="-24" y="64" fill="#fff">5</text>
+            <circle cx="0" cy="90" r="10" fill="#e5e7eb"/><text x="-24" y="94" fill="#fff">7</text>
+            <circle cx="0" cy="120" r="10" fill="#111827" stroke="#e5e7eb"/><text x="-24" y="124" fill="#fff">9</text>
+            <circle cx="0" cy="150" r="10" fill="#e5e7eb"/><text x="-24" y="154" fill="#fff">11</text>
+            <circle cx="0" cy="180" r="10" fill="#e5e7eb"/><text x="-24" y="184" fill="#fff">13</text>
+            <circle cx="0" cy="210" r="10" fill="#e5e7eb"/><text x="-24" y="214" fill="#fff">15</text>
+            <circle cx="0" cy="240" r="10" fill="#f87171"/><text x="-24" y="244" fill="#fff">17</text>
+            <circle cx="0" cy="270" r="10" fill="#e5e7eb"/><text x="-24" y="274" fill="#fff">19</text>
+            <circle cx="0" cy="300" r="10" fill="#e5e7eb"/><text x="-24" y="304" fill="#fff">21</text>
+
+            <!-- right column even physical pins -->
+            <circle cx="44" cy="0" r="10" fill="#f87171"/><text x="70" y="4" fill="#fff">2</text>
+            <circle cx="44" cy="30" r="10" fill="#f87171"/><text x="70" y="34" fill="#fff">4</text>
+            <circle cx="44" cy="60" r="10" fill="#111827" stroke="#e5e7eb"/><text x="70" y="64" fill="#fff">6</text>
+            <circle cx="44" cy="90" r="10" fill="#e5e7eb"/><text x="70" y="94" fill="#fff">8</text>
+            <circle cx="44" cy="120" r="10" fill="#e5e7eb"/><text x="70" y="124" fill="#fff">10</text>
+            <circle cx="44" cy="150" r="10" fill="#a78bfa"/><text x="70" y="154" fill="#fff">12</text>
+            <circle cx="44" cy="180" r="10" fill="#111827" stroke="#e5e7eb"/><text x="70" y="184" fill="#fff">14</text>
+            <circle cx="44" cy="210" r="10" fill="#e5e7eb"/><text x="70" y="214" fill="#fff">16</text>
+            <circle cx="44" cy="240" r="10" fill="#e5e7eb"/><text x="70" y="244" fill="#fff">18</text>
+            <circle cx="44" cy="270" r="10" fill="#111827" stroke="#e5e7eb"/><text x="70" y="274" fill="#fff">20</text>
+            <circle cx="44" cy="300" r="10" fill="#e5e7eb"/><text x="70" y="304" fill="#fff">22</text>
+          </g>
+        </g>
+
+        <!-- compact highlighted lower pins 36,39,40 -->
+        <g transform="translate(282,228)">
+          <circle cx="44" cy="360" r="10" fill="#facc15"/>
+          <text x="70" y="364" font-size="9" fill="#fff" text-anchor="middle">36</text>
+          <circle cx="0" cy="390" r="10" fill="#111827" stroke="#e5e7eb"/>
+          <text x="-24" y="394" font-size="9" fill="#fff" text-anchor="middle">39</text>
+          <circle cx="44" cy="390" r="10" fill="#fb923c"/>
+          <text x="70" y="394" font-size="9" fill="#fff" text-anchor="middle">40</text>
+          <text x="110" y="156" font-size="12" fill="#4c1d95">GPIO18 / 물리 12</text>
+          <text x="110" y="364" font-size="12" fill="#854d0e">GPIO16 / 물리 36</text>
+          <text x="110" y="394" font-size="12" fill="#9a3412">GPIO21 / 물리 40</text>
+          <text x="110" y="64" font-size="12" fill="#111827">GND / 물리 6</text>
+          <text x="-132" y="4" font-size="12" fill="#991b1b">3.3V / 물리 1</text>
+        </g>
+
+        <!-- Breadboard -->
+        <g filter="url(#shadow)">
+          <rect x="505" y="90" width="585" height="560" rx="18" fill="#ffffff" stroke="#cbd5e1"/>
+          <rect x="535" y="120" width="525" height="42" rx="8" fill="#fee2e2"/>
+          <rect x="535" y="588" width="525" height="42" rx="8" fill="#e0f2fe"/>
+          <line x1="535" y1="141" x2="1060" y2="141" stroke="#dc2626" stroke-width="3"/>
+          <line x1="535" y1="609" x2="1060" y2="609" stroke="#111827" stroke-width="3"/>
+          <text x="548" y="135" font-size="14" fill="#b91c1c" font-weight="700">+ 전원 레일</text>
+          <text x="548" y="604" font-size="14" fill="#111827" font-weight="700">- GND 레일</text>
+          <rect x="760" y="180" width="12" height="390" rx="6" fill="#e5e7eb"/>
+          <text x="800" y="83" font-size="22" fill="#0f172a" font-weight="700" text-anchor="middle">Breadboard</text>
+          <!-- breadboard holes -->
+          <g fill="#e2e8f0">
+            <!-- rows are manually repeated for print-safe static SVG -->
+            <circle cx="560" cy="200" r="4"/><circle cx="590" cy="200" r="4"/><circle cx="620" cy="200" r="4"/><circle cx="650" cy="200" r="4"/><circle cx="680" cy="200" r="4"/>
+            <circle cx="850" cy="200" r="4"/><circle cx="880" cy="200" r="4"/><circle cx="910" cy="200" r="4"/><circle cx="940" cy="200" r="4"/><circle cx="970" cy="200" r="4"/>
+            <circle cx="560" cy="250" r="4"/><circle cx="590" cy="250" r="4"/><circle cx="620" cy="250" r="4"/><circle cx="650" cy="250" r="4"/><circle cx="680" cy="250" r="4"/>
+            <circle cx="850" cy="250" r="4"/><circle cx="880" cy="250" r="4"/><circle cx="910" cy="250" r="4"/><circle cx="940" cy="250" r="4"/><circle cx="970" cy="250" r="4"/>
+            <circle cx="560" cy="300" r="4"/><circle cx="590" cy="300" r="4"/><circle cx="620" cy="300" r="4"/><circle cx="650" cy="300" r="4"/><circle cx="680" cy="300" r="4"/>
+            <circle cx="850" cy="300" r="4"/><circle cx="880" cy="300" r="4"/><circle cx="910" cy="300" r="4"/><circle cx="940" cy="300" r="4"/><circle cx="970" cy="300" r="4"/>
+            <circle cx="560" cy="350" r="4"/><circle cx="590" cy="350" r="4"/><circle cx="620" cy="350" r="4"/><circle cx="650" cy="350" r="4"/><circle cx="680" cy="350" r="4"/>
+            <circle cx="850" cy="350" r="4"/><circle cx="880" cy="350" r="4"/><circle cx="910" cy="350" r="4"/><circle cx="940" cy="350" r="4"/><circle cx="970" cy="350" r="4"/>
+            <circle cx="560" cy="400" r="4"/><circle cx="590" cy="400" r="4"/><circle cx="620" cy="400" r="4"/><circle cx="650" cy="400" r="4"/><circle cx="680" cy="400" r="4"/>
+            <circle cx="850" cy="400" r="4"/><circle cx="880" cy="400" r="4"/><circle cx="910" cy="400" r="4"/><circle cx="940" cy="400" r="4"/><circle cx="970" cy="400" r="4"/>
+            <circle cx="560" cy="450" r="4"/><circle cx="590" cy="450" r="4"/><circle cx="620" cy="450" r="4"/><circle cx="650" cy="450" r="4"/><circle cx="680" cy="450" r="4"/>
+            <circle cx="850" cy="450" r="4"/><circle cx="880" cy="450" r="4"/><circle cx="910" cy="450" r="4"/><circle cx="940" cy="450" r="4"/><circle cx="970" cy="450" r="4"/>
+            <circle cx="560" cy="500" r="4"/><circle cx="590" cy="500" r="4"/><circle cx="620" cy="500" r="4"/><circle cx="650" cy="500" r="4"/><circle cx="680" cy="500" r="4"/>
+            <circle cx="850" cy="500" r="4"/><circle cx="880" cy="500" r="4"/><circle cx="910" cy="500" r="4"/><circle cx="940" cy="500" r="4"/><circle cx="970" cy="500" r="4"/>
+          </g>
+        </g>
+
+        <!-- PIR sensor -->
+        <g filter="url(#shadow)">
+          <rect x="560" y="218" width="180" height="120" rx="18" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+          <circle cx="650" cy="278" r="34" fill="#ffffff" stroke="#60a5fa" stroke-width="4"/>
+          <circle cx="650" cy="278" r="16" fill="#bfdbfe"/>
+          <text x="650" y="206" text-anchor="middle" font-size="18" fill="#1e3a8a" font-weight="700">PIR 인체감지 센서</text>
+          <rect x="585" y="344" width="36" height="30" rx="6" fill="#facc15"/>
+          <rect x="632" y="344" width="36" height="30" rx="6" fill="#ef4444"/>
+          <rect x="679" y="344" width="36" height="30" rx="6" fill="#111827"/>
+          <text x="603" y="365" text-anchor="middle" font-size="12" fill="#111827" font-weight="700">S</text>
+          <text x="650" y="365" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="700">V</text>
+          <text x="697" y="365" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="700">G</text>
+        </g>
+
+        <!-- LED and resistor -->
+        <g filter="url(#shadow)">
+          <text x="900" y="210" text-anchor="middle" font-size="18" fill="#991b1b" font-weight="700">빨간 LED</text>
+          <path d="M875 245 Q900 205 925 245 Z" fill="#ef4444" stroke="#991b1b" stroke-width="2"/>
+          <rect x="886" y="245" width="48" height="16" rx="8" fill="#ef4444" stroke="#991b1b" stroke-width="2"/>
+          <line x1="890" y1="262" x2="890" y2="342" stroke="#475569" stroke-width="5"/>
+          <line x1="922" y1="262" x2="922" y2="342" stroke="#475569" stroke-width="5"/>
+          <text x="863" y="307" font-size="12" fill="#0f172a">긴 다리(+)</text>
+          <text x="932" y="307" font-size="12" fill="#0f172a">짧은 다리(-)</text>
+          <rect x="900" y="404" width="130" height="28" rx="14" fill="#f5d0a9" stroke="#92400e"/>
+          <line x1="900" y1="418" x2="1030" y2="418" stroke="#78350f" stroke-width="3"/>
+          <line x1="920" y1="405" x2="920" y2="432" stroke="#92400e" stroke-width="4"/>
+          <line x1="946" y1="405" x2="946" y2="432" stroke="#92400e" stroke-width="4"/>
+          <line x1="972" y1="405" x2="972" y2="432" stroke="#111827" stroke-width="4"/>
+          <line x1="998" y1="405" x2="998" y2="432" stroke="#111827" stroke-width="4"/>
+          <line x1="1018" y1="405" x2="1018" y2="432" stroke="#92400e" stroke-width="4"/>
+          <text x="965" y="392" text-anchor="middle" font-size="14" fill="#92400e" font-weight="700">330Ω 저항</text>
+        </g>
+
+        <!-- 3-pin buzzer module -->
+        <g filter="url(#shadow)">
+          <text x="920" y="488" text-anchor="middle" font-size="18" fill="#4c1d95" font-weight="700">3핀 능동부저 모듈</text>
+          <rect x="850" y="510" width="150" height="96" rx="16" fill="#ede9fe" stroke="#7c3aed" stroke-width="3"/>
+          <circle cx="935" cy="558" r="30" fill="#c4b5fd" stroke="#7c3aed" stroke-width="2"/>
+          <circle cx="935" cy="558" r="10" fill="#7c3aed"/>
+          <circle cx="865" cy="530" r="6" fill="#f8fafc" stroke="#7c3aed" stroke-width="2"/>
+          <circle cx="865" cy="558" r="6" fill="#f8fafc" stroke="#7c3aed" stroke-width="2"/>
+          <circle cx="865" cy="586" r="6" fill="#f8fafc" stroke="#7c3aed" stroke-width="2"/>
+          <text x="875" y="535" font-size="15" fill="#4c1d95" font-weight="700">S</text>
+          <text x="875" y="563" font-size="15" fill="#4c1d95" font-weight="700">+</text>
+          <text x="875" y="591" font-size="15" fill="#4c1d95" font-weight="700">-</text>
+        </g>
+
+        <!-- Wires -->
+        <!-- 3.3V pin 1 to PIR V -->
+        <path d="M282 228 C420 150, 520 130, 650 141 L650 344" fill="none" stroke="#dc2626" stroke-width="5" marker-end="url(#arrow-red)"/>
+        <text x="430" y="126" font-size="13" fill="#b91c1c" font-weight="700">3.3V 전원선</text>
+
+        <!-- GND pin 6 to ground rail and components -->
+        <path d="M326 288 C430 650, 510 609, 535 609" fill="none" stroke="#111827" stroke-width="5" marker-end="url(#arrow-black)"/>
+        <path d="M697 374 L697 609" fill="none" stroke="#111827" stroke-width="4" marker-end="url(#arrow-black)"/>
+        <path d="M1030 418 C1065 418, 1065 609, 1038 609" fill="none" stroke="#111827" stroke-width="4" marker-end="url(#arrow-black)"/>
+        <path d="M865 586 C990 586, 1010 609, 1038 609" fill="none" stroke="#111827" stroke-width="4" marker-end="url(#arrow-black)"/>
+        <text x="455" y="642" font-size="13" fill="#111827" font-weight="700">공통 GND</text>
+
+        <!-- GPIO16 to PIR signal -->
+        <path d="M326 588 C420 575, 510 500, 603 374" fill="none" stroke="#eab308" stroke-width="5" marker-end="url(#arrow-yellow)"/>
+        <text x="388" y="566" font-size="13" fill="#854d0e" font-weight="700">GPIO16 → PIR S</text>
+
+        <!-- GPIO21 to LED long leg -->
+        <path d="M326 618 C500 640, 660 560, 890 342" fill="none" stroke="#f97316" stroke-width="5" marker-end="url(#arrow-orange)"/>
+        <text x="454" y="626" font-size="13" fill="#9a3412" font-weight="700">GPIO21 → LED 긴 다리(+)</text>
+
+        <!-- LED short leg to resistor -->
+        <path d="M922 342 L922 404" fill="none" stroke="#475569" stroke-width="4"/>
+        <path d="M890 342 L890 348" fill="none" stroke="#f97316" stroke-width="4"/>
+
+        <!-- 3.3V to buzzer plus -->
+        <path d="M282 228 C520 96, 760 96, 865 558" fill="none" stroke="#dc2626" stroke-width="4" marker-end="url(#arrow-red)"/>
+        <text x="742" y="108" font-size="13" fill="#b91c1c" font-weight="700">3.3V → 부저 +</text>
+
+        <!-- GPIO18 to buzzer signal -->
+        <path d="M326 378 C470 430, 680 505, 865 530" fill="none" stroke="#7c3aed" stroke-width="5" marker-end="url(#arrow-purple)"/>
+        <text x="458" y="406" font-size="13" fill="#4c1d95" font-weight="700">GPIO18 → 부저 S</text>
+
+        <!-- Webcam -->
+        <g filter="url(#shadow)">
+          <rect x="78" y="682" width="190" height="48" rx="14" fill="#e0f2fe" stroke="#38bdf8"/>
+          <circle cx="107" cy="706" r="15" fill="#0f172a"/>
+          <circle cx="107" cy="706" r="7" fill="#38bdf8"/>
+          <text x="190" y="712" text-anchor="middle" font-size="14" fill="#0c4a6e" font-weight="700">USB 웹캠은 USB 포트에 연결</text>
+        </g>
+      </svg>
+
+      <div class="legend">
+        <span><i class="dot" style="background: var(--red)"></i>3.3V 전원</span>
+        <span><i class="dot" style="background: var(--black)"></i>GND</span>
+        <span><i class="dot" style="background: var(--yellow)"></i>PIR Signal</span>
+        <span><i class="dot" style="background: var(--orange)"></i>LED 제어</span>
+        <span><i class="dot" style="background: var(--purple)"></i>부저 S 신호</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 핵심 핀 매핑</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>장치</th>
+            <th>코드 BCM GPIO</th>
+            <th>물리 핀</th>
+            <th>연결</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PIR 센서 Signal</td>
+            <td><code>GPIO 16</code></td>
+            <td>36번 핀</td>
+            <td>PIR의 <code>S</code> 또는 <code>Signal</code></td>
+          </tr>
+          <tr>
+            <td>빨간 LED</td>
+            <td><code>GPIO 21</code></td>
+            <td>40번 핀</td>
+            <td>LED 긴 다리(+)</td>
+          </tr>
+          <tr>
+            <td>3핀 능동부저 모듈</td>
+            <td><code>GPIO 18</code></td>
+            <td>12번 핀</td>
+            <td>부저 <code>S</code> 또는 <code>Signal</code> 핀</td>
+          </tr>
+          <tr>
+            <td>3핀 능동부저 모듈 전원</td>
+            <td>3.3V</td>
+            <td>1번 핀</td>
+            <td>부저 <code>+</code> 또는 <code>VCC</code> 핀</td>
+          </tr>
+          <tr>
+            <td>PIR 전원</td>
+            <td>3.3V</td>
+            <td>1번 핀</td>
+            <td>PIR의 <code>V</code> 또는 <code>VCC</code></td>
+          </tr>
+          <tr>
+            <td>공통 GND</td>
+            <td>GND</td>
+            <td>6번 또는 39번 핀</td>
+            <td>PIR G, LED 저항 끝, 부저 <code>-</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note">
+        <strong>중요:</strong> 코드의 <code>GPIO 16</code>은 물리 16번 핀이 아니라 BCM GPIO 16이다.
+        실제 40핀 헤더에서는 물리 36번 핀에 꽂아야 한다.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. 필요한 부품</h2>
+      <ul>
+        <li>Raspberry Pi 4 또는 Raspberry Pi 5 1대</li>
+        <li>브레드보드 1개</li>
+        <li>PIR 인체감지 센서 1개</li>
+        <li>빨간 LED 1개</li>
+        <li>330Ω 저항 1개</li>
+        <li>능동부저 1개</li>
+        <li>USB 웹캠 1개</li>
+        <li>암/수 또는 수/수 점퍼 케이블</li>
+      </ul>
+      <div class="danger">
+        전원을 켠 상태에서 배선을 바꾸지 않는다. 특히 3.3V와 GND를 반대로 꽂으면 센서나 Raspberry Pi가 손상될 수 있다.
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>5. 배선 순서</h2>
+      <ol>
+        <li>Raspberry Pi 전원을 완전히 끄고 전원 어댑터를 분리한다.</li>
+        <li>브레드보드의 한쪽 전원 레일을 GND 레일로 정한다.</li>
+        <li>Raspberry Pi 물리 6번 또는 39번 GND 핀을 브레드보드 GND 레일에 연결한다.</li>
+        <li>PIR 센서의 <code>V</code> 또는 <code>VCC</code>를 Raspberry Pi 물리 1번 3.3V 핀에 연결한다.</li>
+        <li>PIR 센서의 <code>G</code> 또는 <code>GND</code>를 브레드보드 GND 레일에 연결한다.</li>
+        <li>PIR 센서의 <code>S</code> 또는 <code>Signal</code>을 Raspberry Pi 물리 36번, 즉 <code>GPIO 16</code>에 연결한다.</li>
+        <li>빨간 LED의 긴 다리(+)를 Raspberry Pi 물리 40번, 즉 <code>GPIO 21</code>에 연결한다.</li>
+        <li>빨간 LED의 짧은 다리(-)를 330Ω 저항 한쪽에 연결한다.</li>
+        <li>330Ω 저항의 반대쪽을 브레드보드 GND 레일에 연결한다.</li>
+        <li>3핀 능동부저 모듈의 <code>S</code> 핀을 Raspberry Pi 물리 12번, 즉 <code>GPIO 18</code>에 연결한다.</li>
+        <li>3핀 능동부저 모듈의 <code>+</code> 또는 <code>VCC</code> 핀을 Raspberry Pi 물리 1번, 즉 <code>3.3V</code>에 연결한다.</li>
+        <li>3핀 능동부저 모듈의 <code>-</code> 핀을 브레드보드 GND 레일에 연결한다.</li>
+        <li>USB 웹캠을 Raspberry Pi USB 포트에 연결한다.</li>
+        <li>모든 배선을 다시 확인한 뒤 Raspberry Pi 전원을 켠다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>6. 장치별 연결 설명</h2>
+      <h3>PIR 센서</h3>
+      <p>
+        PIR 센서는 사람의 움직임이 감지되면 Signal 핀이 HIGH가 된다.
+        프로그램에서는 <code>pir.value == 1</code>을 움직임 감지로 판단한다.
+      </p>
+      <h3>빨간 LED</h3>
+      <p>
+        LED는 반드시 저항과 함께 사용한다. 이 회로에서는
+        <code>GPIO 21 → LED 긴 다리 → LED 짧은 다리 → 330Ω 저항 → GND</code>
+        순서로 전류가 흐른다.
+      </p>
+      <h3>3핀 능동부저 모듈</h3>
+      <p>
+        <code>S</code>는 신호 입력, <code>+</code>는 전원, <code>-</code>는 GND이다.
+        코드에서는 <code>GPIO 18</code>로 <code>S</code> 핀을 ON/OFF하여 부저를 울린다.
+        수동부저와 다르게 능동부저는 별도의 PWM 주파수 코드가 필요하지 않다.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>7. 연결 전 점검표</h2>
+      <ul>
+        <li>PIR <code>S</code>가 물리 36번, 즉 <code>GPIO 16</code>에 연결되었는가?</li>
+        <li>LED 긴 다리가 물리 40번, 즉 <code>GPIO 21</code>에 연결되었는가?</li>
+        <li>LED 짧은 다리가 330Ω 저항을 거쳐 GND로 연결되었는가?</li>
+        <li>3핀 부저의 <code>S</code>가 물리 12번, 즉 <code>GPIO 18</code>에 연결되었는가?</li>
+        <li>3핀 부저의 <code>+</code>가 물리 1번, 즉 <code>3.3V</code>에 연결되었는가?</li>
+        <li>3핀 부저의 <code>-</code>가 GND에 연결되었는가?</li>
+        <li>PIR, LED, 부저가 같은 GND 기준을 공유하는가?</li>
+        <li>웹캠이 Raspberry Pi에 연결되어 있고 카메라 방향이 문 쪽을 향하는가?</li>
+      </ul>
+      <div class="ok">
+        모든 항목이 맞으면 전원을 켠 뒤 실제 모드에서 프로그램을 실행한다.
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>8. 회로 완성 후 실행 명령어</h2>
+      <p>프로젝트 폴더에서 실제 하드웨어 모드로 실행한다.</p>
+      <pre><code>cd ~/aiot_room_security
+source .venv/bin/activate
+export AIOT_MOCK_MODE=0
+export TELEGRAM_BOT_TOKEN="BotFather에서_발급받은_token"
+export TELEGRAM_CHAT_ID="확인한_chat_id"
+python main.py</code></pre>
+      <p>
+        웹캠이 열리지 않으면 <code>AIOT_CAMERA_INDEX=0</code>을 추가로 설정한 뒤 다시 실행한다.
+      </p>
+      <pre><code>export AIOT_CAMERA_INDEX=0
+python main.py</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>9. 문제 해결</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>증상</th>
+            <th>확인할 것</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PIR이 계속 0이다</td>
+            <td>Signal이 물리 36번인지 확인한다. PIR 센서는 전원 인가 후 안정화 시간이 필요할 수 있다.</td>
+          </tr>
+          <tr>
+            <td>LED가 켜지지 않는다</td>
+            <td>LED 긴 다리와 짧은 다리 방향, 330Ω 저항, GND 연결을 확인한다.</td>
+          </tr>
+          <tr>
+            <td>부저가 울리지 않는다</td>
+            <td>3핀 능동부저 모듈이면 <code>S</code>가 GPIO18, <code>+</code>가 3.3V, <code>-</code>가 GND인지 확인한다.</td>
+          </tr>
+          <tr>
+            <td>웹캠 오류가 나온다</td>
+            <td>USB 연결, 카메라 권한, <code>AIOT_CAMERA_INDEX=0</code> 설정을 확인한다.</td>
+          </tr>
+          <tr>
+            <td>텔레그램이 오지 않는다</td>
+            <td>봇 token, chat_id, 인터넷 연결을 확인한다. 먼저 봇에게 아무 메시지나 보내야 chat_id를 받을 수 있다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>10. 제출 보고서용 회로 설명 문장</h2>
+      <p>
+        본 회로는 PIR 인체감지 센서를 <code>GPIO 16</code> 입력으로 사용하고,
+        빨간 LED는 <code>GPIO 21</code> 출력으로 사용하고, 3핀 능동부저 모듈은 <code>S</code> 핀을 <code>GPIO 18</code> 출력으로 제어한다.
+        PIR 센서가 움직임을 감지하면 프로그램이 웹캠 프레임을 읽고 OpenCV DNN MobileNet SSD 모델로 사람을 판별한다.
+        사람이 감지되면 LED와 부저가 경고를 출력하며 텔레그램 알림과 CSV 로그가 함께 생성된다.
+      </p>
+      <p>
+        LED에는 330Ω 저항을 직렬로 연결하여 GPIO 핀과 LED를 보호하였다.
+        모든 장치는 같은 GND를 공유하도록 구성하여 센서 입력과 출력 제어의 기준 전압이 일치하도록 하였다.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
