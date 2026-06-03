@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PIR + 3핀 부저 브레드보드 배선도</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #cbd5e1;
+      --red: #dc2626;
+      --black: #111827;
+      --yellow: #eab308;
+      --purple: #7c3aed;
+      --blue: #2563eb;
+      --green: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 34px 22px 22px;
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      color: white;
+    }
+
+    header .wrap,
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 42px);
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 23px;
+      letter-spacing: -0.03em;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    main {
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .lead {
+      max-width: 880px;
+      color: #dbeafe;
+      font-size: 17px;
+    }
+
+    .diagram {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      text-align: left;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #1e3a8a;
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fefce8;
+      border: 1px solid #fde68a;
+      color: #713f12;
+    }
+
+    .danger {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #7f1d1d;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 14px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    ol {
+      margin-top: 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>PIR 센서 + 3핀 부저 브레드보드 배선도</h1>
+      <p class="lead">
+        Raspberry Pi 5의 물리 1번 3.3V를 PIR 센서와 3핀 부저가 함께 써야 하므로,
+        브레드보드의 빨간 + 라인으로 전원을 나눠주는 방식이다.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card wide">
+      <h2>1. 그대로 따라 꽂는 회로도</h2>
+      <svg class="diagram" viewBox="0 0 1200 780" role="img" aria-label="Raspberry Pi 5, 브레드보드 전원 분배, PIR 센서, 3핀 부저 배선도">
+        <defs>
+          <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#dc2626"/>
+          </marker>
+          <marker id="arrow-black" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#111827"/>
+          </marker>
+          <marker id="arrow-yellow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#eab308"/>
+          </marker>
+          <marker id="arrow-purple" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#7c3aed"/>
+          </marker>
+        </defs>
+
+        <rect x="20" y="20" width="1160" height="740" rx="24" fill="#f8fafc"/>
+
+        <!-- Raspberry Pi -->
+        <rect x="60" y="90" width="310" height="600" rx="24" fill="#15803d"/>
+        <text x="215" y="640" text-anchor="middle" font-size="26" fill="#fff" font-weight="700">Raspberry Pi 5</text>
+        <rect x="90" y="135" width="112" height="80" rx="10" fill="#0f172a"/>
+        <rect x="220" y="140" width="105" height="38" rx="8" fill="#e5e7eb"/>
+        <rect x="220" y="192" width="105" height="38" rx="8" fill="#e5e7eb"/>
+        <rect x="270" y="260" width="70" height="380" rx="12" fill="#111827"/>
+        <text x="305" y="250" text-anchor="middle" font-size="14" fill="#0f172a" font-weight="700">40핀 헤더</text>
+
+        <!-- Header important pins -->
+        <circle cx="290" cy="280" r="12" fill="#ef4444"/>
+        <text x="250" y="285" font-size="15" fill="#991b1b" font-weight="700">물리 1: 3.3V</text>
+        <circle cx="320" cy="335" r="12" fill="#111827"/>
+        <text x="250" y="340" font-size="15" fill="#111827" font-weight="700">물리 6: GND</text>
+        <circle cx="320" cy="430" r="12" fill="#7c3aed"/>
+        <text x="250" y="435" font-size="15" fill="#4c1d95" font-weight="700">물리 12: GPIO18</text>
+        <circle cx="320" cy="570" r="12" fill="#eab308"/>
+        <text x="250" y="575" font-size="15" fill="#854d0e" font-weight="700">물리 36: GPIO16</text>
+
+        <!-- Breadboard -->
+        <rect x="470" y="80" width="350" height="610" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+        <rect x="495" y="115" width="300" height="54" rx="8" fill="#fee2e2"/>
+        <rect x="495" y="606" width="300" height="54" rx="8" fill="#e0f2fe"/>
+        <line x1="515" y1="142" x2="775" y2="142" stroke="#dc2626" stroke-width="5"/>
+        <line x1="515" y1="633" x2="775" y2="633" stroke="#111827" stroke-width="5"/>
+        <text x="520" y="132" font-size="17" fill="#b91c1c" font-weight="700">+ 라인: 3.3V 나눠쓰기</text>
+        <text x="520" y="624" font-size="17" fill="#111827" font-weight="700">- 라인: GND 공통</text>
+        <text x="645" y="72" text-anchor="middle" font-size="24" fill="#0f172a" font-weight="700">브레드보드</text>
+
+        <!-- Breadboard holes simplified -->
+        <g fill="#cbd5e1">
+          <circle cx="540" cy="220" r="5"/><circle cx="575" cy="220" r="5"/><circle cx="610" cy="220" r="5"/><circle cx="645" cy="220" r="5"/><circle cx="680" cy="220" r="5"/>
+          <circle cx="540" cy="285" r="5"/><circle cx="575" cy="285" r="5"/><circle cx="610" cy="285" r="5"/><circle cx="645" cy="285" r="5"/><circle cx="680" cy="285" r="5"/>
+          <circle cx="540" cy="350" r="5"/><circle cx="575" cy="350" r="5"/><circle cx="610" cy="350" r="5"/><circle cx="645" cy="350" r="5"/><circle cx="680" cy="350" r="5"/>
+          <circle cx="540" cy="415" r="5"/><circle cx="575" cy="415" r="5"/><circle cx="610" cy="415" r="5"/><circle cx="645" cy="415" r="5"/><circle cx="680" cy="415" r="5"/>
+          <circle cx="540" cy="480" r="5"/><circle cx="575" cy="480" r="5"/><circle cx="610" cy="480" r="5"/><circle cx="645" cy="480" r="5"/><circle cx="680" cy="480" r="5"/>
+          <circle cx="540" cy="545" r="5"/><circle cx="575" cy="545" r="5"/><circle cx="610" cy="545" r="5"/><circle cx="645" cy="545" r="5"/><circle cx="680" cy="545" r="5"/>
+        </g>
+
+        <!-- PIR -->
+        <rect x="900" y="120" width="170" height="120" rx="16" fill="#dbeafe" stroke="#60a5fa" stroke-width="3"/>
+        <circle cx="985" cy="180" r="34" fill="#fff" stroke="#60a5fa" stroke-width="4"/>
+        <text x="985" y="110" text-anchor="middle" font-size="22" fill="#1d4ed8" font-weight="700">PIR 센서</text>
+        <rect x="885" y="260" width="48" height="34" rx="8" fill="#eab308"/>
+        <rect x="960" y="260" width="48" height="34" rx="8" fill="#dc2626"/>
+        <rect x="1035" y="260" width="48" height="34" rx="8" fill="#111827"/>
+        <text x="909" y="282" text-anchor="middle" font-size="16" fill="#111827" font-weight="700">S</text>
+        <text x="984" y="282" text-anchor="middle" font-size="16" fill="#fff" font-weight="700">V</text>
+        <text x="1059" y="282" text-anchor="middle" font-size="16" fill="#fff" font-weight="700">G</text>
+
+        <!-- Buzzer -->
+        <rect x="900" y="455" width="190" height="135" rx="16" fill="#ede9fe" stroke="#7c3aed" stroke-width="3"/>
+        <circle cx="995" cy="522" r="42" fill="#c4b5fd" stroke="#7c3aed" stroke-width="3"/>
+        <circle cx="995" cy="522" r="14" fill="#7c3aed"/>
+        <text x="995" y="438" text-anchor="middle" font-size="22" fill="#4c1d95" font-weight="700">3핀 능동부저</text>
+        <circle cx="915" cy="485" r="8" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+        <circle cx="915" cy="522" r="8" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+        <circle cx="915" cy="559" r="8" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+        <text x="930" y="491" font-size="18" fill="#4c1d95" font-weight="700">S</text>
+        <text x="930" y="528" font-size="18" fill="#4c1d95" font-weight="700">+</text>
+        <text x="930" y="565" font-size="18" fill="#4c1d95" font-weight="700">-</text>
+
+        <!-- Webcam -->
+        <rect x="82" y="705" width="260" height="42" rx="12" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2"/>
+        <text x="212" y="732" text-anchor="middle" font-size="17" fill="#0c4a6e" font-weight="700">USB 웹캠은 Pi USB 포트에 꽂기</text>
+
+        <!-- Power distribution wires -->
+        <path d="M290 280 C400 160, 455 142, 515 142" fill="none" stroke="#dc2626" stroke-width="7" marker-end="url(#arrow-red)"/>
+        <text x="350" y="158" font-size="17" fill="#b91c1c" font-weight="700">Pi 3.3V → 브레드보드 + 라인</text>
+
+        <path d="M320 335 C410 600, 455 633, 515 633" fill="none" stroke="#111827" stroke-width="7" marker-end="url(#arrow-black)"/>
+        <text x="348" y="650" font-size="17" fill="#111827" font-weight="700">Pi GND → 브레드보드 - 라인</text>
+
+        <!-- PIR signal, power, gnd -->
+        <path d="M320 570 C470 545, 705 350, 885 277" fill="none" stroke="#eab308" stroke-width="6" marker-end="url(#arrow-yellow)"/>
+        <text x="460" y="525" font-size="17" fill="#854d0e" font-weight="700">GPIO16 → PIR S</text>
+
+        <path d="M650 142 C760 110, 880 175, 984 260" fill="none" stroke="#dc2626" stroke-width="5" marker-end="url(#arrow-red)"/>
+        <text x="742" y="122" font-size="15" fill="#b91c1c" font-weight="700">+ 라인 → PIR V</text>
+
+        <path d="M650 633 C810 635, 965 420, 1059 294" fill="none" stroke="#111827" stroke-width="5" marker-end="url(#arrow-black)"/>
+        <text x="752" y="654" font-size="15" fill="#111827" font-weight="700">- 라인 → PIR G</text>
+
+        <!-- Buzzer signal, power, gnd -->
+        <path d="M320 430 C500 430, 710 485, 915 485" fill="none" stroke="#7c3aed" stroke-width="6" marker-end="url(#arrow-purple)"/>
+        <text x="480" y="410" font-size="17" fill="#4c1d95" font-weight="700">GPIO18 → 부저 S</text>
+
+        <path d="M630 142 C720 210, 800 390, 915 522" fill="none" stroke="#dc2626" stroke-width="5" marker-end="url(#arrow-red)"/>
+        <text x="718" y="305" font-size="15" fill="#b91c1c" font-weight="700">+ 라인 → 부저 +</text>
+
+        <path d="M640 633 C755 640, 830 585, 915 559" fill="none" stroke="#111827" stroke-width="5" marker-end="url(#arrow-black)"/>
+        <text x="726" y="612" font-size="15" fill="#111827" font-weight="700">- 라인 → 부저 -</text>
+      </svg>
+
+      <div class="legend">
+        <span><i class="dot" style="background: var(--red)"></i>빨강: 3.3V 전원</span>
+        <span><i class="dot" style="background: var(--black)"></i>검정: GND</span>
+        <span><i class="dot" style="background: var(--yellow)"></i>노랑: PIR 신호 GPIO16</span>
+        <span><i class="dot" style="background: var(--purple)"></i>보라: 부저 신호 GPIO18</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2. 왜 브레드보드가 필요한가?</h2>
+      <p>
+        PIR 센서의 <code>V</code>와 부저의 <code>+</code>가 둘 다 3.3V를 사용한다.
+        라즈베리파이 물리 1번 핀 하나에 선 두 개를 억지로 꽂지 말고,
+        브레드보드의 <code>+ 라인</code>으로 전원을 나눠준다.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>분배 라인</th>
+            <th>연결할 것</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>브레드보드 <code>+ 라인</code></td>
+            <td>Pi 3.3V, PIR V, 부저 +</td>
+          </tr>
+          <tr>
+            <td>브레드보드 <code>- 라인</code></td>
+            <td>Pi GND, PIR G, 부저 -</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>3. 최종 연결표</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>부품</th>
+            <th>핀</th>
+            <th>꽂는 곳</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Raspberry Pi</td>
+            <td>물리 1번 3.3V</td>
+            <td>브레드보드 <code>+ 라인</code></td>
+          </tr>
+          <tr>
+            <td>Raspberry Pi</td>
+            <td>GND 아무 핀</td>
+            <td>브레드보드 <code>- 라인</code></td>
+          </tr>
+          <tr>
+            <td>PIR 센서</td>
+            <td><code>S</code></td>
+            <td>GPIO16, 물리 36번</td>
+          </tr>
+          <tr>
+            <td>PIR 센서</td>
+            <td><code>V</code></td>
+            <td>브레드보드 <code>+ 라인</code></td>
+          </tr>
+          <tr>
+            <td>PIR 센서</td>
+            <td><code>G</code></td>
+            <td>브레드보드 <code>- 라인</code></td>
+          </tr>
+          <tr>
+            <td>3핀 부저</td>
+            <td><code>S</code></td>
+            <td>GPIO18, 물리 12번</td>
+          </tr>
+          <tr>
+            <td>3핀 부저</td>
+            <td><code>+</code></td>
+            <td>브레드보드 <code>+ 라인</code></td>
+          </tr>
+          <tr>
+            <td>3핀 부저</td>
+            <td><code>-</code></td>
+            <td>브레드보드 <code>- 라인</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card wide">
+      <h2>4. 꽂는 순서</h2>
+      <ol>
+        <li>라즈베리파이 전원을 끈다.</li>
+        <li>Pi 물리 1번 <code>3.3V</code>를 브레드보드 빨간 <code>+ 라인</code>에 연결한다.</li>
+        <li>Pi의 GND 핀 하나를 브레드보드 파란/검정 <code>- 라인</code>에 연결한다.</li>
+        <li>PIR <code>V</code>를 브레드보드 <code>+ 라인</code>에 꽂는다.</li>
+        <li>PIR <code>G</code>를 브레드보드 <code>- 라인</code>에 꽂는다.</li>
+        <li>PIR <code>S</code>를 Pi 물리 36번, 즉 <code>GPIO16</code>에 꽂는다.</li>
+        <li>부저 <code>+</code>를 브레드보드 <code>+ 라인</code>에 꽂는다.</li>
+        <li>부저 <code>-</code>를 브레드보드 <code>- 라인</code>에 꽂는다.</li>
+        <li>부저 <code>S</code>를 Pi 물리 12번, 즉 <code>GPIO18</code>에 꽂는다.</li>
+        <li>USB 웹캠을 라즈베리파이 USB 포트에 꽂는다.</li>
+      </ol>
+      <div class="danger">
+        부저의 <code>+</code>를 GPIO18에 꽂지 않는다. 3핀 부저에서 GPIO18에 연결하는 핀은 반드시 <code>S</code>이다.
+      </div>
+    </section>
+  </main>
+</body>
+</html>
