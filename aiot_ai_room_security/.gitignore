@@ -6,4 +6,5 @@ captures/*.jpeg
 captures/*.png
 models/*.pb
 models/*.pbtxt
+models/*.tar.gz
 !models/.gitkeep

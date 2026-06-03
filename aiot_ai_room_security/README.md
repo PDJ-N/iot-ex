@@ -133,7 +133,9 @@ pip install -r requirements.txt
 
 ## 9. OpenCV DNN 모델 파일 준비 방법
 
-수업 Section 16에서 사용한 MobileNet SSD 모델 파일 두 개가 필요하다.
+수업 Section 16에서 사용한 OpenCV DNN MobileNet SSD 모델 파일 두 개가 필요하다.
+이 프로젝트는 얼굴의 신원을 구분하는 얼굴인식이 아니라, 웹캠 화면 안에서 `person` 객체가 있는지 확인하는 사람 객체검출을 사용한다.
+모델 준비는 GitHub 저장소를 검색하거나 clone하지 않고, 스크립트가 필요한 원본 파일만 직접 내려받는 방식으로 진행한다.
 
 ```text
 models/
@@ -145,7 +147,7 @@ models/
 
 ```bash
 cd ~/iot-ex/aiot_ai_room_security
-bash download_models.sh
+python3 download_models.py
 ls -lh models
 ```
 
@@ -157,6 +159,16 @@ ssd_mobilenet_v2_coco_2018_03_29.pbtxt
 ```
 
 모델 파일이 없으면 프로그램은 필요한 파일명을 콘솔에 안내하고 비정상 종료되지 않도록 처리한다.
+
+이미 수업 때 받은 모델 파일이 라즈베리파이에 있으면 다운로드 대신 직접 복사해도 된다.
+
+```bash
+cd ~/iot-ex/aiot_ai_room_security
+mkdir -p models
+cp /모델파일이있는경로/frozen_inference_graph.pb models/
+cp /모델파일이있는경로/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
+ls -lh models
+```
 
 ## 10. 텔레그램 봇 설정 방법
 

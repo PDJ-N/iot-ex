@@ -51,7 +51,7 @@ def _get_model():
             print("[AI 모델 오류] MobileNet SSD 모델 파일이 없습니다.")
             for path in missing_paths:
                 print(f"  - 필요한 파일: {path}")
-            print("  README.md의 모델 파일 준비 방법을 참고하여 models 폴더에 넣으세요.")
+            print("  python3 download_models.py를 실행하거나 수업 때 받은 모델 파일을 models 폴더에 넣으세요.")
             _model_error_reported = True
         return None
 

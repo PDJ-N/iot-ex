@@ -387,13 +387,21 @@ PY</code></pre>
 
     <section class="card wide">
       <h2>7. AI 모델 파일 준비</h2>
-      <p>OpenCV DNN MobileNet SSD 모델 파일 두 개를 준비한다.</p>
+      <p>
+        수업에서 사용한 OpenCV DNN MobileNet SSD 모델 파일 두 개를 준비한다.
+        GitHub 저장소를 검색하거나 clone하지 않고, 필요한 파일만 직접 다운로드한다.
+      </p>
       <pre><code>cd ~/iot-ex/aiot_ai_room_security
-bash download_models.sh
+python3 download_models.py
 ls -lh models</code></pre>
       <p>아래 두 파일이 보이면 정상이다.</p>
       <pre><code>frozen_inference_graph.pb
 ssd_mobilenet_v2_coco_2018_03_29.pbtxt</code></pre>
+      <p>이미 수업 때 받은 모델 파일이 있다면 다운로드 대신 아래처럼 직접 복사해도 된다.</p>
+      <pre><code>mkdir -p models
+cp /모델파일이있는경로/frozen_inference_graph.pb models/
+cp /모델파일이있는경로/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
+ls -lh models</code></pre>
     </section>
 
     <section class="card wide">
@@ -456,7 +464,7 @@ python main.py</code></pre>
           </tr>
           <tr>
             <td>모델 파일</td>
-            <td><code>bash download_models.sh</code> 실행 후 <code>ls -lh models</code></td>
+            <td><code>python3 download_models.py</code> 실행 후 <code>ls -lh models</code></td>
           </tr>
           <tr>
             <td>웹캠 장치</td>
