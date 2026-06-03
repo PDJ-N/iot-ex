@@ -1,4 +1,4 @@
-"""침입 이벤트를 CSV 파일에 기록한다."""
+"""침입 이벤트를 CSV 로그로 저장한다."""
 
 import csv
 from datetime import datetime
@@ -6,11 +6,11 @@ from datetime import datetime
 import config
 
 
-CSV_HEADER = ["timestamp", "event_type", "message", "confidence"]
+CSV_HEADER = ["timestamp", "event_type", "message", "confidence", "image_path"]
 
 
-def write_event(event_type, message, confidence):
-    """logs/event_log.csv가 없으면 헤더를 만들고 이벤트 한 줄을 추가한다."""
+def write_event(event_type, message, confidence, image_path):
+    """logs/event_log.csv에 이벤트 한 줄을 추가한다."""
     log_path = config.LOG_FILE_PATH
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -21,6 +21,12 @@ def write_event(event_type, message, confidence):
             writer.writerow(CSV_HEADER)
 
         timestamp = datetime.now().isoformat(timespec="seconds")
-        writer.writerow([timestamp, event_type, message, f"{confidence:.4f}"])
+        writer.writerow([
+            timestamp,
+            event_type,
+            message,
+            f"{confidence:.4f}",
+            image_path,
+        ])
 
     print(f"[로그 저장] {log_path}")
