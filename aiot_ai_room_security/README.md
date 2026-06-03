@@ -131,6 +131,50 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+## 8.1 현재 진행 상태 기준 빠른 순서
+
+부저와 PIR 센서가 이미 정상 동작한다면, 이제 남은 작업은 USB 웹캠과 OpenCV DNN 사람 객체검출 모델을 준비하는 것이다.
+
+```bash
+cd ~/iot-ex
+git pull
+
+cd aiot_ai_room_security
+source .venv/bin/activate
+python3 download_models.py
+ls -lh models
+```
+
+`models` 폴더가 비어 있거나 아래 두 파일이 없으면 AI 사람 인식 단계가 실행되지 않는다.
+
+```text
+frozen_inference_graph.pb
+ssd_mobilenet_v2_coco_2018_03_29.pbtxt
+```
+
+모델 파일 준비가 끝나면 PIR 없이 AI와 웹캠만 먼저 테스트한다.
+
+```bash
+cd ~/iot-ex/aiot_ai_room_security
+source .venv/bin/activate
+export AIOT_MOCK_MODE=0
+export AIOT_CAMERA_INDEX=0
+
+python - <<'PY'
+import vision_ai
+
+found, confidence, frame = vision_ai.detect_person()
+print("person_detected:", found)
+print("confidence:", confidence)
+print("frame_shape:", None if frame is None else frame.shape)
+
+if frame is not None:
+    print("saved_image:", vision_ai.save_frame(frame))
+PY
+```
+
+카메라 앞에 사람이 있는데 `person_detected: False`가 나오면 카메라 각도, 조명, 사람과 카메라 거리, `PERSON_CONFIDENCE_THRESHOLD` 값을 확인한다.
+
 ## 9. OpenCV DNN 모델 파일 준비 방법
 
 수업 Section 16에서 사용한 OpenCV DNN MobileNet SSD 모델 파일 두 개가 필요하다.
@@ -159,6 +203,14 @@ ssd_mobilenet_v2_coco_2018_03_29.pbtxt
 ```
 
 모델 파일이 없으면 프로그램은 필요한 파일명을 콘솔에 안내하고 비정상 종료되지 않도록 처리한다.
+
+`ls -lh models`가 비어 있으면 아래 명령을 다시 실행한다.
+
+```bash
+cd ~/iot-ex/aiot_ai_room_security
+python3 download_models.py
+ls -lh models
+```
 
 이미 수업 때 받은 모델 파일이 라즈베리파이에 있으면 다운로드 대신 직접 복사해도 된다.
 
