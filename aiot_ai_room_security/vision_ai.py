@@ -11,6 +11,8 @@ _camera = None
 _opencv_error_reported = False
 _model_error_reported = False
 _camera_error_reported = False
+_window_error_reported = False
+_camera_window_enabled = True
 
 
 def _get_cv2():
@@ -119,9 +121,70 @@ def _draw_person_box(frame, detection, confidence):
     )
 
 
+def read_camera_frame():
+    """웹캠에서 현재 프레임 하나를 읽어 반환한다. 실패하면 None을 반환한다."""
+    global _camera
+    if config.MOCK_MODE:
+        return None
+
+    camera = _get_camera()
+    if camera is None:
+        return None
+
+    try:
+        success, frame = camera.read()
+    except Exception as exc:
+        print(f"[웹캠 오류] 프레임 읽기 중 오류가 발생했습니다: {exc}")
+        return None
+
+    if not success or frame is None:
+        print("[웹캠 오류] 프레임을 읽지 못했습니다. 다음 반복에서 다시 시도합니다.")
+        camera.release()
+        _camera = None
+        return None
+
+    return frame
+
+
+def show_frame(frame, wait_ms=1):
+    """OpenCV 창에 프레임을 표시한다. q 키를 누르면 True를 반환한다."""
+    global _window_error_reported, _camera_window_enabled
+
+    if frame is None or not config.SHOW_CAMERA_WINDOW or not _camera_window_enabled:
+        return False
+
+    cv2 = _get_cv2()
+    if cv2 is None:
+        return False
+
+    try:
+        cv2.imshow(config.CAMERA_WINDOW_NAME, frame)
+        key = cv2.waitKey(wait_ms) & 0xFF
+    except cv2.error as exc:
+        _camera_window_enabled = False
+        if not _window_error_reported:
+            print(f"[화면 표시 오류] OpenCV 창을 열 수 없습니다: {exc}")
+            print("  라즈베리파이 Desktop 환경에서 실행하거나 AIOT_SHOW_CAMERA_WINDOW=0으로 끄세요.")
+            _window_error_reported = True
+        return False
+
+    if key == ord("q"):
+        print("[화면 표시] q 키가 입력되어 프로그램을 종료합니다.")
+        return True
+    return False
+
+
+def update_camera_preview():
+    """실행 중 카메라 화면을 계속 보여준다. q 키를 누르면 True를 반환한다."""
+    if not config.SHOW_CAMERA_WINDOW or config.MOCK_MODE:
+        return False
+
+    frame = read_camera_frame()
+    return show_frame(frame)
+
+
 def detect_person():
     """사람 탐지 여부, confidence, 프레임을 반환한다."""
-    global _camera
     if config.MOCK_MODE:
         if config.MOCK_PERSON_DETECTED:
             confidence = config.MOCK_PERSON_CONFIDENCE
@@ -135,16 +198,8 @@ def detect_person():
     if model is None or camera is None:
         return False, 0.0, None
 
-    try:
-        success, frame = camera.read()
-    except Exception as exc:
-        print(f"[웹캠 오류] 프레임 읽기 중 오류가 발생했습니다: {exc}")
-        return False, 0.0, None
-
-    if not success or frame is None:
-        print("[웹캠 오류] 프레임을 읽지 못했습니다. 다음 감지에서 다시 시도합니다.")
-        camera.release()
-        _camera = None
+    frame = read_camera_frame()
+    if frame is None:
         return False, 0.0, None
 
     cv2 = _get_cv2()
@@ -207,7 +262,7 @@ def save_frame(frame):
 
 def close_camera():
     """프로그램 종료 시 카메라 자원을 정리한다."""
-    global _camera
+    global _camera, _camera_window_enabled
     if _camera is not None:
         _camera.release()
         _camera = None
@@ -216,3 +271,4 @@ def close_camera():
             _cv2.destroyAllWindows()
         except _cv2.error:
             pass
+    _camera_window_enabled = True

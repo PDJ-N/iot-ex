@@ -31,6 +31,7 @@ def _handle_motion(last_alert_time):
     print("[PIR] 움직임 감지. USB 웹캠 프레임을 가져와 AI로 확인합니다.")
 
     person_detected, confidence, frame = vision_ai.detect_person()
+    vision_ai.show_frame(frame)
     if not person_detected:
         print("[AI] 기준 confidence 이상의 person 객체가 없습니다.")
         return last_alert_time
@@ -59,8 +60,11 @@ def main():
     print(
         f"MOCK_MODE={config.MOCK_MODE}, "
         f"confidence 기준={config.PERSON_CONFIDENCE_THRESHOLD:.2f}, "
-        f"cooldown={config.ALERT_COOLDOWN_SECONDS:.1f}초"
+        f"cooldown={config.ALERT_COOLDOWN_SECONDS:.1f}초, "
+        f"카메라 화면 표시={config.SHOW_CAMERA_WINDOW}"
     )
+    if config.SHOW_CAMERA_WINDOW:
+        print("[화면 표시] OpenCV 카메라 창이 열립니다. 창을 닫으려면 q 키 또는 Ctrl+C를 누르세요.")
 
     last_alert_time = None
     loop_count = 0
@@ -69,6 +73,8 @@ def main():
         while True:
             loop_count += 1
             try:
+                if vision_ai.update_camera_preview():
+                    break
                 if sensor.read_motion():
                     last_alert_time = _handle_motion(last_alert_time)
             except Exception as exc:

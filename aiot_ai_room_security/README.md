@@ -285,6 +285,7 @@ source .venv/bin/activate
 
 export AIOT_MOCK_MODE=0
 export AIOT_CAMERA_INDEX=0
+export AIOT_SHOW_CAMERA_WINDOW=1
 export TELEGRAM_BOT_TOKEN="BotFather에서_받은_token"
 export TELEGRAM_CHAT_ID="확인한_chat_id"
 
@@ -293,6 +294,27 @@ python main.py
 
 종료할 때는 `Ctrl+C`를 누른다.
 
+### 11.3 실행 중 카메라 화면 보기
+
+`AIOT_SHOW_CAMERA_WINDOW=1`을 설정하면 프로그램 실행 중 OpenCV 창에 USB 웹캠 화면이 계속 표시된다.
+PIR이 움직임을 감지하고 AI가 `person`을 찾으면 박스와 confidence가 그려진 프레임도 같은 창에 표시된다.
+기존 부저, 텔레그램, 사진 저장, CSV 로그 기능은 그대로 유지된다.
+
+```bash
+cd ~/iot-ex/aiot_ai_room_security
+source .venv/bin/activate
+
+export AIOT_MOCK_MODE=0
+export AIOT_CAMERA_INDEX=0
+export AIOT_SHOW_CAMERA_WINDOW=1
+
+python main.py
+```
+
+OpenCV 창을 보려면 라즈베리파이 Desktop 화면에서 실행해야 한다.
+SSH 터미널만 사용하는 환경이나 화면이 없는 Raspberry Pi OS Lite에서는 창이 뜨지 않을 수 있으므로 이때는 `AIOT_SHOW_CAMERA_WINDOW=0`으로 둔다.
+창이 떠 있는 상태에서 `q` 키를 누르면 프로그램이 종료된다.
+
 ## 12. 주요 설정값
 
 | 설정 | 기본값 | 설명 |
@@ -300,6 +322,7 @@ python main.py
 | `PIR_SENSOR_PIN` | `16` | PIR Signal GPIO |
 | `BUZZER_PIN` | `18` | 2핀 부저 `+` 또는 3핀 부저 `S` |
 | `PERSON_CONFIDENCE_THRESHOLD` | `0.50` | 사람 탐지 confidence 기준 |
+| `SHOW_CAMERA_WINDOW` | `False` | `AIOT_SHOW_CAMERA_WINDOW=1`이면 실행 중 카메라 화면 표시 |
 | `ALERT_COOLDOWN_SECONDS` | `10.0` | 중복 알림 방지 시간 |
 | `BUZZER_BEEP_SECONDS` | `2.0` | 부저 경고음 시간 |
 | `MOCK_MODE` | `True` | 하드웨어 없는 테스트 모드 |

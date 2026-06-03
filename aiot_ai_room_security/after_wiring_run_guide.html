@@ -485,16 +485,19 @@ PY</code></pre>
       <p>
         텔레그램 설정 전에 먼저 전체 프로그램이 부저, 카메라, AI, 로그까지 도는지 확인한다.
         token과 chat_id가 없으면 텔레그램만 건너뛴다.
+        카메라 화면을 보고 싶으면 <code>AIOT_SHOW_CAMERA_WINDOW=1</code>을 켠다.
       </p>
       <pre><code>cd ~/iot-ex/aiot_ai_room_security
 source .venv/bin/activate
 
 export AIOT_MOCK_MODE=0
 export AIOT_CAMERA_INDEX=0
+export AIOT_SHOW_CAMERA_WINDOW=1
 
 python main.py</code></pre>
       <p>사람이 PIR 앞에서 움직이면 아래 흐름이 나와야 한다.</p>
       <ul>
+        <li>OpenCV 창에 USB 웹캠 화면 표시</li>
         <li>콘솔에 PIR 감지 메시지 출력</li>
         <li>AI person confidence 출력</li>
         <li>부저 울림</li>
@@ -511,12 +514,18 @@ source .venv/bin/activate
 
 export AIOT_MOCK_MODE=0
 export AIOT_CAMERA_INDEX=0
+export AIOT_SHOW_CAMERA_WINDOW=1
 export TELEGRAM_BOT_TOKEN="BotFather에서_받은_token"
 export TELEGRAM_CHAT_ID="확인한_chat_id"
 
 python main.py</code></pre>
       <div class="ok">
         정상 동작하면 텔레그램으로 “방에 사람이 감지되었습니다.” 메시지와 사진이 전송된다.
+      </div>
+      <div class="note">
+        <code>AIOT_SHOW_CAMERA_WINDOW=1</code>은 라즈베리파이 Desktop 화면에서 실행할 때 사용한다.
+        SSH 터미널만 쓰거나 화면이 없는 OS에서는 <code>AIOT_SHOW_CAMERA_WINDOW=0</code>으로 둔다.
+        OpenCV 창에서 <code>q</code> 키를 누르면 프로그램이 종료된다.
       </div>
     </section>
 

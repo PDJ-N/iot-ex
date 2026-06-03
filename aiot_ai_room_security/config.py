@@ -65,6 +65,11 @@ CAMERA_INDEX = _env_int("AIOT_CAMERA_INDEX", 0)
 CAMERA_WIDTH = _env_int("AIOT_CAMERA_WIDTH", 640)
 CAMERA_HEIGHT = _env_int("AIOT_CAMERA_HEIGHT", 480)
 
+# True로 설정하면 실행 중 OpenCV 창에 카메라 화면을 보여준다.
+# 라즈베리파이 Desktop 환경에서 사용하고, SSH 터미널만 쓰는 환경에서는 False로 둔다.
+SHOW_CAMERA_WINDOW = _env_bool("AIOT_SHOW_CAMERA_WINDOW", False)
+CAMERA_WINDOW_NAME = os.getenv("AIOT_CAMERA_WINDOW_NAME", "AIoT Room Security Camera")
+
 # ---------------------------------------------------------------------------
 # 저장 경로 설정
 # ---------------------------------------------------------------------------
