@@ -145,11 +145,15 @@ models/
 
 ```bash
 cd ~/iot-ex/aiot_ai_room_security
-git clone https://github.com/moonchuljang/OpencvDnn.git /tmp/OpencvDnn
-mkdir -p models
-cp /tmp/OpencvDnn/models/frozen_inference_graph.pb models/
-cp /tmp/OpencvDnn/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
-ls -l models
+bash download_models.sh
+ls -lh models
+```
+
+`ls -lh models`를 실행했을 때 아래 두 파일이 보여야 한다.
+
+```text
+frozen_inference_graph.pb
+ssd_mobilenet_v2_coco_2018_03_29.pbtxt
 ```
 
 모델 파일이 없으면 프로그램은 필요한 파일명을 콘솔에 안내하고 비정상 종료되지 않도록 처리한다.

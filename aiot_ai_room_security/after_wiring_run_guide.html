@@ -389,11 +389,8 @@ PY</code></pre>
       <h2>7. AI 모델 파일 준비</h2>
       <p>OpenCV DNN MobileNet SSD 모델 파일 두 개를 준비한다.</p>
       <pre><code>cd ~/iot-ex/aiot_ai_room_security
-git clone https://github.com/moonchuljang/OpencvDnn.git /tmp/OpencvDnn
-mkdir -p models
-cp /tmp/OpencvDnn/models/frozen_inference_graph.pb models/
-cp /tmp/OpencvDnn/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
-ls -l models</code></pre>
+bash download_models.sh
+ls -lh models</code></pre>
       <p>아래 두 파일이 보이면 정상이다.</p>
       <pre><code>frozen_inference_graph.pb
 ssd_mobilenet_v2_coco_2018_03_29.pbtxt</code></pre>
@@ -459,7 +456,7 @@ python main.py</code></pre>
           </tr>
           <tr>
             <td>모델 파일</td>
-            <td><code>ls -l models</code></td>
+            <td><code>bash download_models.sh</code> 실행 후 <code>ls -lh models</code></td>
           </tr>
           <tr>
             <td>웹캠 장치</td>
@@ -477,7 +474,7 @@ python main.py</code></pre>
         <li>터미널 오류 메시지 전체</li>
         <li><code>python --version</code></li>
         <li><code>pwd</code></li>
-        <li><code>ls -l models</code></li>
+        <li><code>ls -lh models</code></li>
         <li><code>ls /dev/video*</code></li>
         <li><code>cat logs/event_log.csv</code></li>
       </ul>

@@ -6,3 +6,4 @@ captures/*.jpeg
 captures/*.png
 models/*.pb
 models/*.pbtxt
+!models/.gitkeep
