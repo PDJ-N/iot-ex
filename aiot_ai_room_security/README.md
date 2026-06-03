@@ -179,6 +179,22 @@ PY
 
 카메라 앞에 사람이 있는데 `person_detected: False`가 나오면 카메라 각도, 조명, 사람과 카메라 거리, `PERSON_CONFIDENCE_THRESHOLD` 값을 확인한다.
 
+카메라 화면을 직접 보면서 전체 프로그램을 실행하려면 아래처럼 실행한다.
+
+```bash
+cd ~/iot-ex/aiot_ai_room_security
+source .venv/bin/activate
+
+export AIOT_MOCK_MODE=0
+export AIOT_CAMERA_INDEX=0
+export AIOT_SHOW_CAMERA_WINDOW=1
+
+python main.py
+```
+
+OpenCV 창이 뜨면 카메라가 계속 켜져 있는 상태로 화면이 보인다.
+PIR 감지 후 사람이 탐지되면 `person confidence` 박스가 프레임에 표시된다.
+
 ## 9. OpenCV DNN 모델 파일 준비 방법
 
 수업 Section 16에서 사용한 OpenCV DNN MobileNet SSD 모델 파일 두 개가 필요하다.
@@ -314,6 +330,24 @@ python main.py
 OpenCV 창을 보려면 라즈베리파이 Desktop 화면에서 실행해야 한다.
 SSH 터미널만 사용하는 환경이나 화면이 없는 Raspberry Pi OS Lite에서는 창이 뜨지 않을 수 있으므로 이때는 `AIOT_SHOW_CAMERA_WINDOW=0`으로 둔다.
 창이 떠 있는 상태에서 `q` 키를 누르면 프로그램이 종료된다.
+
+카메라 창이 안 뜰 때 확인할 것:
+
+```bash
+echo $DISPLAY
+ls /dev/video*
+python - <<'PY'
+import cv2
+cam = cv2.VideoCapture(0)
+print("camera opened:", cam.isOpened())
+ok, frame = cam.read()
+print("frame read:", ok)
+cam.release()
+PY
+```
+
+`echo $DISPLAY` 결과가 비어 있으면 그래픽 화면이 없는 터미널에서 실행 중인 것이다.
+이 경우 라즈베리파이 Desktop에서 터미널을 열어 실행하거나, 화면 표시 옵션을 끈다.
 
 ## 12. 주요 설정값
 
