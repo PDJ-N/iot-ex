@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AIoT 방 침입 감지 시스템 기획 및 데이터 구조도</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #d7deea;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --orange: #ea580c;
+      --red: #dc2626;
+      --purple: #7c3aed;
+      --soft-blue: #eff6ff;
+      --soft-green: #f0fdf4;
+      --soft-orange: #fff7ed;
+      --soft-red: #fff1f2;
+      --soft-purple: #f5f3ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    header {
+      padding: 42px 22px 28px;
+      color: white;
+      background: linear-gradient(135deg, #0f172a, #1d4ed8 58%, #7c3aed);
+    }
+
+    header .wrap,
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin: 20px 0 8px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      padding: 22px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .lead {
+      max-width: 900px;
+      color: #dbeafe;
+      font-size: 17px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.25);
+      font-size: 13px;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #1e3a8a;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95em;
+    }
+
+    pre {
+      margin: 12px 0 0;
+      padding: 14px;
+      overflow: auto;
+      border-radius: 12px;
+      background: #0f172a;
+      color: #e5e7eb;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      text-align: left;
+    }
+
+    ul,
+    ol {
+      margin-top: 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .note,
+    .ok,
+    .danger {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+    }
+
+    .note {
+      background: var(--soft-orange);
+      border: 1px solid #fed7aa;
+      color: #7c2d12;
+    }
+
+    .ok {
+      background: var(--soft-green);
+      border: 1px solid #bbf7d0;
+      color: #14532d;
+    }
+
+    .danger {
+      background: var(--soft-red);
+      border: 1px solid #fecdd3;
+      color: #7f1d1d;
+    }
+
+    .diagram {
+      display: grid;
+      gap: 12px;
+    }
+
+    .flow-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .node {
+      min-height: 92px;
+      padding: 14px;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      background: #f8fafc;
+      position: relative;
+    }
+
+    .node strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .node small {
+      display: block;
+      color: var(--muted);
+    }
+
+    .input {
+      background: var(--soft-blue);
+      border-color: #93c5fd;
+    }
+
+    .process {
+      background: var(--soft-purple);
+      border-color: #c4b5fd;
+    }
+
+    .output {
+      background: var(--soft-green);
+      border-color: #86efac;
+    }
+
+    .storage {
+      background: var(--soft-orange);
+      border-color: #fdba74;
+    }
+
+    .decision {
+      background: #fefce8;
+      border-color: #fde047;
+    }
+
+    .arrow {
+      text-align: center;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.2em;
+    }
+
+    .mermaid-like {
+      display: grid;
+      gap: 10px;
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .module {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #f8fafc;
+    }
+
+    .module strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #0f172a;
+    }
+
+    .print {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 10px;
+      background: white;
+      color: #1d4ed8;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @media (max-width: 960px) {
+      main,
+      .flow-row,
+      .module-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      header {
+        color: var(--ink);
+        background: white;
+        border-bottom: 2px solid var(--line);
+      }
+
+      header .lead {
+        color: var(--muted);
+      }
+
+      .card {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .print {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>AIoT 방 침입 감지 시스템 기획 및 데이터 구조도</h1>
+      <p class="lead">
+        Raspberry Pi 5, PIR 센서, USB 웹캠, OpenCV DNN MobileNet SSD, 능동 부저,
+        텔레그램 봇 API, CSV 로그를 결합한 기말 프로젝트의 설계 설명서이다.
+        보고서에 바로 옮겨 쓸 수 있도록 시스템 목적, 데이터 구조, 처리 흐름, 모듈 역할을 정리했다.
+      </p>
+      <div class="badges">
+        <span class="badge">프로젝트 기획</span>
+        <span class="badge">데이터 구조도</span>
+        <span class="badge">모듈 구조</span>
+        <span class="badge">CSV 로그 구조</span>
+        <span class="badge">보고서 참고용</span>
+      </div>
+      <button class="print" type="button" onclick="window.print()">인쇄 / PDF 저장</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card wide">
+      <h2>1. 프로젝트 기획 개요</h2>
+      <p>
+        이 시스템은 방 안에 누군가 들어오는 상황을 감지하기 위한 Raspberry Pi 기반 AIoT 보안 프로젝트이다.
+        단순히 PIR 센서의 움직임만으로 침입을 판단하면 사람 외의 움직임에도 반응할 수 있다.
+        그래서 PIR 센서를 1차 트리거로 사용하고, USB 웹캠과 OpenCV DNN MobileNet SSD 모델을 2차 확인 단계로 사용한다.
+      </p>
+      <p>
+        PIR 센서가 움직임을 감지하면 웹캠 프레임을 가져오고, AI 모델이 프레임 안의 <code>person</code> 객체를 찾는다.
+        confidence가 기준값 이상이면 침입 이벤트로 판단한다. 이후 능동 부저를 울리고, 감지 이미지를 저장하고,
+        텔레그램 메시지 및 사진을 전송하며, CSV 로그 파일에 이벤트를 기록한다.
+      </p>
+      <div class="ok">
+        이 프로젝트의 AI 기능은 얼굴이 누구인지 식별하는 얼굴인식이 아니라,
+        수업에서 사용한 OpenCV DNN MobileNet SSD 기반 사람 객체검출이다.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2. 해결하려는 문제</h2>
+      <ul>
+        <li>방에 누군가 들어왔는지 자동으로 감지한다.</li>
+        <li>단순 움직임 감지의 오탐을 줄이기 위해 AI 사람 객체검출을 추가한다.</li>
+        <li>침입 이벤트를 로컬 경고음, 원격 텔레그램 알림, CSV 로그로 남긴다.</li>
+        <li>cooldown 기능으로 같은 상황에서 알림이 너무 많이 반복되지 않게 한다.</li>
+        <li>MOCK_MODE로 하드웨어 없이도 코드 흐름을 테스트할 수 있게 한다.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>3. 사용 기술</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>기술</th>
+            <th>사용 목적</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PIR 센서</td>
+            <td>움직임 감지 트리거</td>
+          </tr>
+          <tr>
+            <td>USB 웹캠</td>
+            <td>침입 순간 영상 프레임 입력</td>
+          </tr>
+          <tr>
+            <td>OpenCV DNN</td>
+            <td>MobileNet SSD 모델로 <code>person</code> 객체 탐지</td>
+          </tr>
+          <tr>
+            <td>gpiozero</td>
+            <td>GPIO 입력과 부저 출력 제어</td>
+          </tr>
+          <tr>
+            <td>Telegram Bot API</td>
+            <td>실시간 원격 메시지와 사진 전송</td>
+          </tr>
+          <tr>
+            <td>CSV</td>
+            <td>이벤트 발생 시간, 종류, confidence, 이미지 경로 기록</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card wide">
+      <h2>4. 전체 데이터 흐름도</h2>
+      <div class="diagram">
+        <div class="flow-row">
+          <div class="node input">
+            <strong>PIR 센서</strong>
+            움직임 감지값
+            <small><code>True</code> 또는 <code>False</code></small>
+          </div>
+          <div class="node process">
+            <strong>main.py</strong>
+            움직임 이벤트 처리
+            <small><code>_handle_motion()</code></small>
+          </div>
+          <div class="node input">
+            <strong>USB 웹캠</strong>
+            현재 프레임
+            <small><code>numpy.ndarray</code></small>
+          </div>
+          <div class="node process">
+            <strong>OpenCV DNN</strong>
+            사람 객체검출
+            <small><code>person</code>, confidence</small>
+          </div>
+          <div class="node decision">
+            <strong>침입 판단</strong>
+            confidence 기준 비교
+            <small>기본 <code>0.50</code></small>
+          </div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="flow-row">
+          <div class="node output">
+            <strong>능동 부저</strong>
+            경고음 출력
+            <small><code>GPIO18</code></small>
+          </div>
+          <div class="node storage">
+            <strong>captures/</strong>
+            감지 이미지 저장
+            <small><code>intrusion_날짜.jpg</code></small>
+          </div>
+          <div class="node output">
+            <strong>Telegram</strong>
+            메시지와 사진 전송
+            <small>Bot API</small>
+          </div>
+          <div class="node storage">
+            <strong>logs/event_log.csv</strong>
+            이벤트 로그 기록
+            <small>timestamp, type, message...</small>
+          </div>
+          <div class="node process">
+            <strong>cooldown</strong>
+            중복 알림 방지
+            <small>기본 10초</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>5. 처리 순서 구조도</h2>
+      <ol>
+        <li><code>main.py</code>가 실행되고 시스템 준비 메시지를 출력한다.</li>
+        <li>무한 루프에서 <code>sensor.read_motion()</code>으로 PIR 센서 값을 읽는다.</li>
+        <li>PIR 값이 움직임 감지이면 <code>vision_ai.detect_person()</code>을 호출한다.</li>
+        <li><code>vision_ai.py</code>가 USB 웹캠 프레임을 읽고 OpenCV DNN 모델을 실행한다.</li>
+        <li>모델 결과 중 class id가 <code>1</code>인 <code>person</code> 객체를 찾는다.</li>
+        <li>confidence가 <code>PERSON_CONFIDENCE_THRESHOLD</code> 이상이면 침입 이벤트로 판단한다.</li>
+        <li>cooldown 시간이 지나지 않았다면 중복 알림을 막고 루프로 돌아간다.</li>
+        <li>cooldown이 끝났다면 이미지를 저장하고 부저를 울린다.</li>
+        <li>텔레그램 메시지와 사진을 전송한다.</li>
+        <li><code>logger.write_event()</code>가 CSV 로그를 기록한다.</li>
+        <li><code>Ctrl+C</code> 또는 OpenCV 창의 <code>q</code> 입력 시 카메라와 부저를 정리하고 종료한다.</li>
+      </ol>
+    </section>
+
+    <section class="card wide">
+      <h2>6. 모듈 구조도</h2>
+      <div class="module-grid">
+        <div class="module">
+          <strong>main.py</strong>
+          전체 프로그램 진입점이다. PIR 감지, AI 확인, cooldown, 부저, 텔레그램, 로그 저장 흐름을 연결한다.
+        </div>
+        <div class="module">
+          <strong>config.py</strong>
+          GPIO 핀, 모델 경로, confidence 기준, 텔레그램 정보, 저장 경로, MOCK_MODE, 카메라 표시 옵션을 관리한다.
+        </div>
+        <div class="module">
+          <strong>sensor.py</strong>
+          PIR 센서 값을 읽는다. 실제 모드에서는 gpiozero의 MotionSensor를 사용하고, mock 모드에서는 테스트 값을 반환한다.
+        </div>
+        <div class="module">
+          <strong>buzzer.py</strong>
+          능동 부저를 켜고 끈다. 침입 이벤트 발생 시 <code>beep(duration)</code>으로 경고음을 출력한다.
+        </div>
+        <div class="module">
+          <strong>vision_ai.py</strong>
+          USB 웹캠 프레임을 읽고 OpenCV DNN MobileNet SSD 모델로 <code>person</code> 객체를 탐지한다.
+          카메라 미리보기 창과 이미지 저장도 담당한다.
+        </div>
+        <div class="module">
+          <strong>telegram_notifier.py</strong>
+          Telegram Bot API로 텍스트 메시지와 사진을 보낸다. token 또는 chat_id가 없으면 전송을 건너뛴다.
+        </div>
+        <div class="module">
+          <strong>logger.py</strong>
+          <code>logs/event_log.csv</code>에 이벤트를 기록한다. 파일이 없으면 헤더를 먼저 만든다.
+        </div>
+        <div class="module">
+          <strong>download_models.py</strong>
+          OpenCV DNN 모델 파일을 직접 다운로드하는 대체 스크립트이다. 수업자료 clone 방식이 안 될 때 사용한다.
+        </div>
+        <div class="module">
+          <strong>requirements.txt</strong>
+          실행에 필요한 Python 라이브러리 목록이다. OpenCV, numpy, gpiozero, requests가 포함된다.
+        </div>
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>7. 데이터 구조 상세</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>데이터 이름</th>
+            <th>형태</th>
+            <th>생성 위치</th>
+            <th>사용 목적</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>motion_detected</code></td>
+            <td>Boolean</td>
+            <td><code>sensor.read_motion()</code></td>
+            <td>PIR 센서가 움직임을 감지했는지 판단한다.</td>
+          </tr>
+          <tr>
+            <td><code>frame</code></td>
+            <td>OpenCV 이미지 배열</td>
+            <td><code>vision_ai.read_camera_frame()</code></td>
+            <td>AI 객체검출, 화면 표시, 이미지 저장에 사용한다.</td>
+          </tr>
+          <tr>
+            <td><code>person_detected</code></td>
+            <td>Boolean</td>
+            <td><code>vision_ai.detect_person()</code></td>
+            <td>사람이 감지되었는지 나타낸다.</td>
+          </tr>
+          <tr>
+            <td><code>confidence</code></td>
+            <td>Float</td>
+            <td><code>vision_ai.detect_person()</code></td>
+            <td>AI가 사람이라고 판단한 신뢰도이다.</td>
+          </tr>
+          <tr>
+            <td><code>image_path</code></td>
+            <td>String</td>
+            <td><code>vision_ai.save_frame()</code></td>
+            <td>저장된 감지 이미지의 파일 경로이다.</td>
+          </tr>
+          <tr>
+            <td><code>last_alert_time</code></td>
+            <td>Float 또는 None</td>
+            <td><code>main.py</code></td>
+            <td>cooldown 계산에 사용하는 마지막 알림 시간이다.</td>
+          </tr>
+          <tr>
+            <td><code>event_log.csv</code></td>
+            <td>CSV 파일</td>
+            <td><code>logger.write_event()</code></td>
+            <td>침입 이벤트 기록과 보고서 결과 확인에 사용한다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card wide">
+      <h2>8. CSV 로그 데이터 구조</h2>
+      <p>
+        로그 파일은 <code>logs/event_log.csv</code>에 저장된다.
+        CSV 인코딩은 <code>utf-8-sig</code>를 사용하므로 Windows Excel에서도 한글이 비교적 안정적으로 열린다.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>컬럼명</th>
+            <th>예시</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>timestamp</code></td>
+            <td><code>2026-06-03T15:20:10</code></td>
+            <td>침입 이벤트가 기록된 시간</td>
+          </tr>
+          <tr>
+            <td><code>event_type</code></td>
+            <td><code>INTRUSION</code></td>
+            <td>이벤트 종류</td>
+          </tr>
+          <tr>
+            <td><code>message</code></td>
+            <td><code>방에 사람이 감지되었습니다.</code></td>
+            <td>사용자에게 전달되는 이벤트 메시지</td>
+          </tr>
+          <tr>
+            <td><code>confidence</code></td>
+            <td><code>0.9521</code></td>
+            <td>AI 사람 객체검출 신뢰도</td>
+          </tr>
+          <tr>
+            <td><code>image_path</code></td>
+            <td><code>captures/intrusion_20260603_152010_123456.jpg</code></td>
+            <td>저장된 감지 이미지 경로</td>
+          </tr>
+        </tbody>
+      </table>
+      <pre><code>timestamp,event_type,message,confidence,image_path
+2026-06-03T15:20:10,INTRUSION,방에 사람이 감지되었습니다.,0.9521,captures/intrusion_20260603_152010_123456.jpg</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>9. 설정 데이터 구조</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>설정값</th>
+            <th>기본값</th>
+            <th>역할</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>PIR_SENSOR_PIN</code></td>
+            <td><code>16</code></td>
+            <td>PIR Signal GPIO 번호</td>
+          </tr>
+          <tr>
+            <td><code>BUZZER_PIN</code></td>
+            <td><code>18</code></td>
+            <td>능동 부저 제어 GPIO 번호</td>
+          </tr>
+          <tr>
+            <td><code>PERSON_CONFIDENCE_THRESHOLD</code></td>
+            <td><code>0.50</code></td>
+            <td>사람 객체검출 기준값</td>
+          </tr>
+          <tr>
+            <td><code>ALERT_COOLDOWN_SECONDS</code></td>
+            <td><code>10.0</code></td>
+            <td>중복 알림 방지 시간</td>
+          </tr>
+          <tr>
+            <td><code>SHOW_CAMERA_WINDOW</code></td>
+            <td><code>False</code></td>
+            <td>OpenCV 카메라 화면 표시 여부</td>
+          </tr>
+          <tr>
+            <td><code>MOCK_MODE</code></td>
+            <td><code>True</code></td>
+            <td>하드웨어 없이 테스트할지 여부</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>10. 저장 파일 구조</h2>
+      <pre><code>aiot_ai_room_security/
+├── models/
+│   ├── frozen_inference_graph.pb
+│   └── ssd_mobilenet_v2_coco_2018_03_29.pbtxt
+├── captures/
+│   └── intrusion_YYYYMMDD_HHMMSS_xxxxxx.jpg
+└── logs/
+    └── event_log.csv</code></pre>
+      <ul>
+        <li><code>models/</code>: OpenCV DNN 사람 객체검출 모델 파일</li>
+        <li><code>captures/</code>: 침입 감지 시 저장되는 웹캠 이미지</li>
+        <li><code>logs/</code>: CSV 이벤트 로그</li>
+      </ul>
+    </section>
+
+    <section class="card wide">
+      <h2>11. 이벤트 판단 로직</h2>
+      <pre><code>if PIR 센서가 움직임을 감지하지 않음:
+    계속 대기
+
+if PIR 센서가 움직임을 감지함:
+    USB 웹캠 프레임 읽기
+    OpenCV DNN으로 person 객체검출
+
+if person confidence &lt; 기준값:
+    침입으로 판단하지 않음
+
+if person confidence &gt;= 기준값:
+    cooldown 확인
+    cooldown 중이면 중복 알림 생략
+    cooldown이 아니면 침입 이벤트 처리
+        - 이미지 저장
+        - 부저 경고음
+        - 텔레그램 메시지/사진 전송
+        - CSV 로그 저장</code></pre>
+    </section>
+
+    <section class="card wide">
+      <h2>12. 보고서용 기획 설명 문장</h2>
+      <p>
+        본 프로젝트는 PIR 인체감지 센서와 OpenCV DNN MobileNet SSD 객체검출을 결합한
+        Raspberry Pi 기반 AIoT 방 침입 감지 시스템이다. PIR 센서는 움직임을 빠르게 감지할 수 있지만,
+        사람 외의 움직임에도 반응할 가능성이 있다. 따라서 본 시스템은 PIR 센서를 1차 감지 장치로 사용하고,
+        USB 웹캠과 AI 사람 객체검출을 2차 확인 단계로 사용하여 침입 판단의 신뢰도를 높였다.
+      </p>
+      <p>
+        침입으로 판단되면 능동 부저를 울려 현장에서 경고음을 출력하고, 텔레그램 봇 API를 통해 사용자에게
+        메시지와 사진을 전송한다. 또한 모든 이벤트는 CSV 파일에 시간, 이벤트 종류, 메시지, AI confidence,
+        이미지 경로와 함께 저장된다. 이 구조는 센서 입력, AI 영상 분석, GPIO 출력, 네트워크 알림,
+        데이터 기록을 함께 활용하므로 AIoT 수업에서 학습한 여러 기술을 통합적으로 적용한 사례이다.
+      </p>
+    </section>
+
+    <section class="card wide">
+      <h2>13. 장점과 한계</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>내용</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>장점</td>
+            <td>PIR 센서만 쓰는 방식보다 AI 사람 객체검출을 추가하여 침입 판단 신뢰도를 높일 수 있다.</td>
+          </tr>
+          <tr>
+            <td>장점</td>
+            <td>텔레그램 메시지와 사진을 통해 사용자가 원격으로 상황을 확인할 수 있다.</td>
+          </tr>
+          <tr>
+            <td>장점</td>
+            <td>CSV 로그와 저장 이미지를 통해 결과보고서와 시연 자료를 만들기 쉽다.</td>
+          </tr>
+          <tr>
+            <td>한계</td>
+            <td>조명, 카메라 각도, 모델 파일 경로, confidence 기준값에 따라 탐지 성능이 달라질 수 있다.</td>
+          </tr>
+          <tr>
+            <td>한계</td>
+            <td>OpenCV 창 표시는 라즈베리파이 Desktop 환경이 필요하며 SSH 환경에서는 제한될 수 있다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

@@ -114,6 +114,7 @@ LED는 사용하지 않는다.
 ## 8. 설치 방법
 
 회로 연결이 끝난 뒤 실행 순서만 빠르게 보고 싶으면 `after_wiring_run_guide.html`을 열어 확인한다.
+프로젝트 기획, 데이터 구조도, 모듈 관계, CSV 로그 구조는 `planning_data_structure_guide.html`을 열어 확인한다.
 
 라즈베리파이 터미널에서 실행한다.
 
