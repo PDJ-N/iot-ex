@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>회로 연결 후 Raspberry Pi 실행 순서</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #d7deea;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --red: #dc2626;
+      --yellow: #ca8a04;
+      --soft-blue: #eff6ff;
+      --soft-green: #f0fdf4;
+      --soft-red: #fff1f2;
+      --soft-yellow: #fefce8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    header {
+      padding: 38px 22px 24px;
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      color: white;
+    }
+
+    header .wrap,
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 23px;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin: 18px 0 8px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      padding: 22px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .lead {
+      max-width: 880px;
+      color: #dbeafe;
+      font-size: 17px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.25);
+      font-size: 13px;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #1e3a8a;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95em;
+    }
+
+    pre {
+      margin: 12px 0 0;
+      padding: 14px;
+      overflow: auto;
+      border-radius: 12px;
+      background: #0f172a;
+      color: #e5e7eb;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      text-align: left;
+    }
+
+    ol,
+    ul {
+      margin-top: 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .note,
+    .ok,
+    .danger {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+    }
+
+    .note {
+      background: var(--soft-yellow);
+      border: 1px solid #fde68a;
+      color: #713f12;
+    }
+
+    .ok {
+      background: var(--soft-green);
+      border: 1px solid #bbf7d0;
+      color: #14532d;
+    }
+
+    .danger {
+      background: var(--soft-red);
+      border: 1px solid #fecdd3;
+      color: #7f1d1d;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .flow div {
+      min-height: 92px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fafc;
+    }
+
+    .flow strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #0f172a;
+    }
+
+    .print {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 10px;
+      background: white;
+      color: #1d4ed8;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+      main,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      header {
+        color: var(--ink);
+        background: white;
+        border-bottom: 2px solid var(--line);
+      }
+
+      header .lead {
+        color: var(--muted);
+      }
+
+      .card {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .print {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>회로 연결 후 실행 순서</h1>
+      <p class="lead">
+        PIR 센서, 3핀 부저, USB 웹캠 연결이 끝난 뒤 라즈베리파이에서 무엇을 해야 하는지
+        순서대로 정리한 설명서이다. 먼저 부품별 단품 테스트를 하고, 그 다음 전체 프로그램을 실행한다.
+      </p>
+      <div class="badges">
+        <span class="badge">1. 코드 받기</span>
+        <span class="badge">2. 환경 설치</span>
+        <span class="badge">3. 부저/PIR/웹캠 테스트</span>
+        <span class="badge">4. AI 모델 준비</span>
+        <span class="badge">5. main.py 실행</span>
+      </div>
+      <button class="print" type="button" onclick="window.print()">인쇄 / PDF 저장</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card wide">
+      <h2>1. 전체 순서</h2>
+      <div class="flow">
+        <div>
+          <strong>1단계</strong>
+          GitHub에서 프로젝트 받기
+        </div>
+        <div>
+          <strong>2단계</strong>
+          Python 가상환경 설치
+        </div>
+        <div>
+          <strong>3단계</strong>
+          부저, PIR, 웹캠 단품 테스트
+        </div>
+        <div>
+          <strong>4단계</strong>
+          MobileNet SSD 모델 파일 준비
+        </div>
+        <div>
+          <strong>5단계</strong>
+          실제 프로그램 실행
+        </div>
+      </div>
+      <div class="note">
+        회로 연결 후 바로 <code>main.py</code>를 실행하지 말고, 부저와 PIR 센서가 따로 잘 동작하는지 먼저 확인한다.
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>2. GitHub에서 코드 받기</h2>
+      <p>라즈베리파이 터미널을 열고 아래 명령어를 입력한다.</p>
+      <pre><code>cd ~
+git clone https://github.com/PDJ-N/iot-ex.git
+cd iot-ex/aiot_ai_room_security</code></pre>
+
+      <p>이미 한 번 clone 했다면 새로 clone하지 말고 업데이트만 한다.</p>
+      <pre><code>cd ~/iot-ex
+git pull
+cd aiot_ai_room_security</code></pre>
+    </section>
+
+    <section class="card wide">
+      <h2>3. Python 환경 설치</h2>
+      <p>프로젝트 폴더 안에서 실행한다.</p>
+      <pre><code>python3 -m venv .venv --system-site-packages
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt</code></pre>
+      <div class="note">
+        다음부터는 이 폴더에 들어온 뒤 항상 <code>source .venv/bin/activate</code>를 먼저 실행한다.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. 부저 테스트</h2>
+      <p>부저가 1초 동안 울리면 정상이다.</p>
+      <pre><code>cd ~/iot-ex/aiot_ai_room_security
+source .venv/bin/activate
+export AIOT_MOCK_MODE=0
+
+python - &lt;&lt;'PY'
+import time
+import buzzer
+
+buzzer.buzzer_on()
+time.sleep(1)
+buzzer.buzzer_off()
+print("부저 테스트 완료")
+PY</code></pre>
+      <div class="danger">
+        3핀 부저에서 <code>S</code>는 GPIO18, <code>+</code>는 3.3V, <code>-</code>는 GND이다.
+        <code>+</code>를 GPIO18에 꽂지 않는다.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>5. PIR 센서 테스트</h2>
+      <p>센서 앞에서 움직이면 <code>PIR: 1</code>, 움직임이 없으면 <code>PIR: 0</code>이 나와야 한다.</p>
+      <pre><code>cd ~/iot-ex/aiot_ai_room_security
+source .venv/bin/activate
+export AIOT_MOCK_MODE=0
+
+python - &lt;&lt;'PY'
+import time
+import sensor
+
+for i in range(20):
+    print("PIR:", int(sensor.read_motion()))
+    time.sleep(0.5)
+PY</code></pre>
+      <div class="note">
+        PIR 센서는 전원을 켠 직후 안정화 시간이 필요할 수 있다. 값이 이상하면 30초 정도 기다렸다가 다시 확인한다.
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>6. USB 웹캠 테스트</h2>
+      <p>먼저 라즈베리파이가 웹캠 장치를 인식했는지 확인한다.</p>
+      <pre><code>ls /dev/video*</code></pre>
+      <p>그 다음 OpenCV로 프레임을 읽어 본다.</p>
+      <pre><code>cd ~/iot-ex/aiot_ai_room_security
+source .venv/bin/activate
+
+python - &lt;&lt;'PY'
+import cv2
+
+cam = cv2.VideoCapture(0)
+print("camera opened:", cam.isOpened())
+ok, frame = cam.read()
+print("frame read:", ok)
+print("shape:", None if frame is None else frame.shape)
+cam.release()
+PY</code></pre>
+      <div class="ok">
+        <code>camera opened: True</code>와 <code>frame read: True</code>가 나오면 웹캠은 정상이다.
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>7. AI 모델 파일 준비</h2>
+      <p>OpenCV DNN MobileNet SSD 모델 파일 두 개를 준비한다.</p>
+      <pre><code>cd ~/iot-ex/aiot_ai_room_security
+git clone https://github.com/moonchuljang/OpencvDnn.git /tmp/OpencvDnn
+mkdir -p models
+cp /tmp/OpencvDnn/models/frozen_inference_graph.pb models/
+cp /tmp/OpencvDnn/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
+ls -l models</code></pre>
+      <p>아래 두 파일이 보이면 정상이다.</p>
+      <pre><code>frozen_inference_graph.pb
+ssd_mobilenet_v2_coco_2018_03_29.pbtxt</code></pre>
+    </section>
+
+    <section class="card wide">
+      <h2>8. 텔레그램 없이 먼저 전체 실행</h2>
+      <p>
+        텔레그램 설정 전에 먼저 전체 프로그램이 부저, 카메라, AI, 로그까지 도는지 확인한다.
+        token과 chat_id가 없으면 텔레그램만 건너뛴다.
+      </p>
+      <pre><code>cd ~/iot-ex/aiot_ai_room_security
+source .venv/bin/activate
+
+export AIOT_MOCK_MODE=0
+export AIOT_CAMERA_INDEX=0
+
+python main.py</code></pre>
+      <p>사람이 PIR 앞에서 움직이면 아래 흐름이 나와야 한다.</p>
+      <ul>
+        <li>콘솔에 PIR 감지 메시지 출력</li>
+        <li>AI person confidence 출력</li>
+        <li>부저 울림</li>
+        <li><code>captures/</code> 폴더에 사진 저장</li>
+        <li><code>logs/event_log.csv</code>에 로그 기록</li>
+      </ul>
+    </section>
+
+    <section class="card wide">
+      <h2>9. 텔레그램 설정 후 최종 실행</h2>
+      <p>BotFather에서 받은 token과 chat_id를 넣고 실행한다.</p>
+      <pre><code>cd ~/iot-ex/aiot_ai_room_security
+source .venv/bin/activate
+
+export AIOT_MOCK_MODE=0
+export AIOT_CAMERA_INDEX=0
+export TELEGRAM_BOT_TOKEN="BotFather에서_받은_token"
+export TELEGRAM_CHAT_ID="확인한_chat_id"
+
+python main.py</code></pre>
+      <div class="ok">
+        정상 동작하면 텔레그램으로 “방에 사람이 감지되었습니다.” 메시지와 사진이 전송된다.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>10. 결과 확인 명령어</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>확인할 것</th>
+            <th>명령어</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>로그 파일</td>
+            <td><code>cat logs/event_log.csv</code></td>
+          </tr>
+          <tr>
+            <td>저장 사진</td>
+            <td><code>ls -l captures</code></td>
+          </tr>
+          <tr>
+            <td>모델 파일</td>
+            <td><code>ls -l models</code></td>
+          </tr>
+          <tr>
+            <td>웹캠 장치</td>
+            <td><code>ls /dev/video*</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>11. 오류가 나면 Codex에 보낼 내용</h2>
+      <p>오류가 나면 아래 정보를 복사해서 Codex에 보내면 원인 분석이 쉽다.</p>
+      <ul>
+        <li>실행한 명령어</li>
+        <li>터미널 오류 메시지 전체</li>
+        <li><code>python --version</code></li>
+        <li><code>pwd</code></li>
+        <li><code>ls -l models</code></li>
+        <li><code>ls /dev/video*</code></li>
+        <li><code>cat logs/event_log.csv</code></li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
