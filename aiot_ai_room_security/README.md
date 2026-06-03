@@ -141,7 +141,11 @@ git pull
 
 cd aiot_ai_room_security
 source .venv/bin/activate
-python3 download_models.py
+
+git clone https://github.com/moonchuljang/OpencvDnn.git /tmp/OpencvDnn
+mkdir -p models
+cp /tmp/OpencvDnn/models/frozen_inference_graph.pb models/
+cp /tmp/OpencvDnn/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
 ls -lh models
 ```
 
@@ -179,7 +183,9 @@ PY
 
 수업 Section 16에서 사용한 OpenCV DNN MobileNet SSD 모델 파일 두 개가 필요하다.
 이 프로젝트는 얼굴의 신원을 구분하는 얼굴인식이 아니라, 웹캠 화면 안에서 `person` 객체가 있는지 확인하는 사람 객체검출을 사용한다.
-모델 준비는 GitHub 저장소를 검색하거나 clone하지 않고, 스크립트가 필요한 원본 파일만 직접 내려받는 방식으로 진행한다.
+수업자료에 있던 기본 방식은 `git clone https://github.com/moonchuljang/OpencvDnn.git` 명령으로 예제 저장소를 받은 뒤, 그 안의 모델 파일을 이 프로젝트의 `models/` 폴더로 복사하는 것이다.
+
+주의: 이 주소는 브라우저 검색창에서 검색하는 것이 아니라 라즈베리파이 터미널에 그대로 입력하는 명령이다.
 
 ```text
 models/
@@ -187,12 +193,23 @@ models/
 └── ssd_mobilenet_v2_coco_2018_03_29.pbtxt
 ```
 
-준비 명령:
+준비 명령, 수업자료 방식:
 
 ```bash
 cd ~/iot-ex/aiot_ai_room_security
-python3 download_models.py
+
+git clone https://github.com/moonchuljang/OpencvDnn.git /tmp/OpencvDnn
+mkdir -p models
+cp /tmp/OpencvDnn/models/frozen_inference_graph.pb models/
+cp /tmp/OpencvDnn/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
 ls -lh models
+```
+
+만약 `/tmp/OpencvDnn` 폴더가 이미 있어서 clone이 실패하면 아래처럼 기존 임시 폴더를 지우고 다시 실행한다.
+
+```bash
+rm -rf /tmp/OpencvDnn
+git clone https://github.com/moonchuljang/OpencvDnn.git /tmp/OpencvDnn
 ```
 
 `ls -lh models`를 실행했을 때 아래 두 파일이 보여야 한다.
@@ -204,7 +221,7 @@ ssd_mobilenet_v2_coco_2018_03_29.pbtxt
 
 모델 파일이 없으면 프로그램은 필요한 파일명을 콘솔에 안내하고 비정상 종료되지 않도록 처리한다.
 
-`ls -lh models`가 비어 있으면 아래 명령을 다시 실행한다.
+수업자료 clone 방식이 실패하거나 네트워크 문제로 파일을 받지 못하면 아래 대체 명령을 사용한다. 이 스크립트는 필요한 모델 파일만 직접 내려받는다.
 
 ```bash
 cd ~/iot-ex/aiot_ai_room_security

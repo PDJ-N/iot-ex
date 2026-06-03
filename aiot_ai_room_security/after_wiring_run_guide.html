@@ -300,11 +300,12 @@
       <h2>현재 상태 기준으로 지금 할 일</h2>
       <p>
         부저와 PIR 센서가 정상 동작하는 것을 확인했다면, 아래 순서만 진행하면 된다.
-        모델 준비에서 GitHub 저장소를 검색하거나 clone하지 않는다.
+        모델 준비는 수업자료에 있던 <code>git clone https://github.com/moonchuljang/OpencvDnn.git</code>
+        명령을 그대로 사용한다.
       </p>
       <ol>
         <li>GitHub에서 최신 설명서와 코드 받기</li>
-        <li><code>python3 download_models.py</code>로 OpenCV DNN 모델 파일 준비</li>
+        <li>수업자료의 <code>OpencvDnn</code> 저장소에서 OpenCV DNN 모델 파일 복사</li>
         <li>USB 웹캠이 프레임을 읽는지 확인</li>
         <li>AI 단독 테스트로 <code>person</code> 객체검출 확인</li>
         <li><code>python main.py</code>로 전체 실행</li>
@@ -318,7 +319,10 @@ git pull
 
 cd aiot_ai_room_security
 source .venv/bin/activate
-python3 download_models.py
+git clone https://github.com/moonchuljang/OpencvDnn.git /tmp/OpencvDnn
+mkdir -p models
+cp /tmp/OpencvDnn/models/frozen_inference_graph.pb models/
+cp /tmp/OpencvDnn/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
 ls -lh models</code></pre>
     </section>
 
@@ -416,14 +420,27 @@ PY</code></pre>
       <h2>7. AI 모델 파일 준비</h2>
       <p>
         수업에서 사용한 OpenCV DNN MobileNet SSD 모델 파일 두 개를 준비한다.
-        GitHub 저장소를 검색하거나 clone하지 않고, 필요한 파일만 직접 다운로드한다.
+        기본 방식은 수업자료에 있던 <code>git clone https://github.com/moonchuljang/OpencvDnn.git</code> 명령을 사용하는 것이다.
+        이 주소는 검색창에 검색하는 것이 아니라 라즈베리파이 터미널에 그대로 입력한다.
       </p>
+      <h3>방법 A: 수업자료 clone 방식</h3>
       <pre><code>cd ~/iot-ex/aiot_ai_room_security
-python3 download_models.py
+git clone https://github.com/moonchuljang/OpencvDnn.git /tmp/OpencvDnn
+mkdir -p models
+cp /tmp/OpencvDnn/models/frozen_inference_graph.pb models/
+cp /tmp/OpencvDnn/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
 ls -lh models</code></pre>
+      <p><code>/tmp/OpencvDnn</code> 폴더가 이미 있어서 clone이 실패하면 아래 명령 후 다시 실행한다.</p>
+      <pre><code>rm -rf /tmp/OpencvDnn
+git clone https://github.com/moonchuljang/OpencvDnn.git /tmp/OpencvDnn</code></pre>
       <p>아래 두 파일이 보이면 정상이다.</p>
       <pre><code>frozen_inference_graph.pb
 ssd_mobilenet_v2_coco_2018_03_29.pbtxt</code></pre>
+      <h3>방법 B: clone이 안 될 때 대체 방식</h3>
+      <p>수업자료 clone 방식이 실패하면 프로젝트에 포함된 스크립트로 필요한 모델 파일만 직접 다운로드한다.</p>
+      <pre><code>cd ~/iot-ex/aiot_ai_room_security
+python3 download_models.py
+ls -lh models</code></pre>
       <p>이미 수업 때 받은 모델 파일이 있다면 다운로드 대신 아래처럼 직접 복사해도 된다.</p>
       <pre><code>mkdir -p models
 cp /모델파일이있는경로/frozen_inference_graph.pb models/
@@ -431,7 +448,7 @@ cp /모델파일이있는경로/ssd_mobilenet_v2_coco_2018_03_29.pbtxt models/
 ls -lh models</code></pre>
       <div class="danger">
         <code>ls -lh models</code>를 실행했을 때 폴더가 비어 있으면 AI 단계는 동작하지 않는다.
-        이 경우 <code>python3 download_models.py</code>를 다시 실행한다.
+        이 경우 수업자료 clone 방식 또는 <code>python3 download_models.py</code>를 다시 실행한다.
       </div>
     </section>
 
@@ -523,7 +540,7 @@ python main.py</code></pre>
           </tr>
           <tr>
             <td>모델 파일</td>
-            <td><code>python3 download_models.py</code> 실행 후 <code>ls -lh models</code></td>
+            <td>수업자료 clone 방식 또는 <code>python3 download_models.py</code> 실행 후 <code>ls -lh models</code></td>
           </tr>
           <tr>
             <td>웹캠 장치</td>
